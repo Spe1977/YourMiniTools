@@ -56,7 +56,8 @@
 
     // Events
     lengthSlider.addEventListener('input', function () {
-      lengthValue.textContent = lengthSlider.value;
+      var el = document.getElementById('pw-length-value');
+      if (el) el.textContent = lengthSlider.value;
     });
 
     btnGenerate.addEventListener('click', generatePassword);
