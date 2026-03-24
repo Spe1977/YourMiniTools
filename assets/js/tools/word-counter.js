@@ -93,6 +93,11 @@
     });
 
     updateStats();
+
+    // Re-update when i18n finishes loading (fixes raw keys on slow connections)
+    document.addEventListener('languagechange', function () {
+      updateStats();
+    });
   });
 
   /* --- File Load --------------------------------------------- */

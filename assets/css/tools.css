@@ -393,6 +393,8 @@
   font-family: var(--font-mono);
   color: var(--color-text);
   line-height: 1.2;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .stat-label {
