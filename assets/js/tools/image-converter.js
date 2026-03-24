@@ -80,7 +80,8 @@
   formatSelect.addEventListener('change', updateQualityVisibility);
 
   qualitySlider.addEventListener('input', function () {
-    qualityValue.textContent = qualitySlider.value;
+    var el = document.getElementById('ic-quality-value');
+    if (el) el.textContent = qualitySlider.value;
   });
 
   convertBtn.addEventListener('click', startConversion);
