@@ -205,9 +205,15 @@
     document.getElementById('cookie-accept').addEventListener('click', function () {
       banner.setAttribute('data-visible', 'false');
       document.body.classList.remove('has-cookie-banner');
-      banner.addEventListener('transitionend', function () {
+      var removed = false;
+      function removeBanner() {
+        if (removed) return;
+        removed = true;
         banner.remove();
-      }, { once: true });
+      }
+      banner.addEventListener('transitionend', removeBanner, { once: true });
+      // Fallback if transition doesn't fire (prefers-reduced-motion: reduce)
+      setTimeout(removeBanner, 500);
       try { localStorage.setItem(COOKIE_KEY, '1'); } catch (e) { /* quota */ }
     });
   }

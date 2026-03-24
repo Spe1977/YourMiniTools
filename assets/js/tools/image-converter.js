@@ -260,6 +260,14 @@
     progressSection.removeAttribute('hidden');
     resultsSection.removeAttribute('hidden');
 
+    // Revoke ObjectURLs from previous batch before clearing DOM
+    var prevResults = resultsEl.querySelectorAll('.btn-primary');
+    prevResults.forEach(function (btn) {
+      if (btn._blobUrl) {
+        URL.revokeObjectURL(btn._blobUrl);
+      }
+    });
+
     // Clear previous results
     while (resultsEl.firstChild) {
       resultsEl.removeChild(resultsEl.firstChild);

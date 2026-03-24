@@ -245,11 +245,15 @@
    * @param {Object} [params] — Parameters for substitution (e.g. { max: '12 MB' })
    * @returns {string} — Translated string or key if not found
    */
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   function t(key, params) {
     var val = translations[key] || fallbackTranslations[key] || key;
     if (params && typeof val === 'string') {
       Object.keys(params).forEach(function (p) {
-        val = val.replace(new RegExp('\\{' + p + '\\}', 'g'), params[p]);
+        val = val.replace(new RegExp('\\{' + escapeRegExp(p) + '\\}', 'g'), params[p]);
       });
     }
     return val;

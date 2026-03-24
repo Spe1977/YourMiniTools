@@ -176,6 +176,12 @@
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json();
+      })
+      .then(function (data) {
+        if (!data || typeof data.rates !== 'object' || typeof data.base !== 'string') {
+          throw new Error('Invalid API response structure');
+        }
+        return data;
       });
   }
 
@@ -299,7 +305,8 @@
     var baseToFrom = (from === base) ? 1 : rates.rates[from];
     var baseToTo = (to === base) ? 1 : rates.rates[to];
 
-    if (!baseToFrom || baseToFrom === 0 || baseToTo === undefined) return null;
+    if (typeof baseToFrom !== 'number' || baseToFrom === 0 ||
+        typeof baseToTo !== 'number') return null;
 
     return baseToTo / baseToFrom;
   }
