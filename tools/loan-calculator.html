@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free Loan Calculator with Amortization Schedule | YourMiniTools</title>
+  <meta name="description" content="Calculate your monthly loan payment with a complete amortization schedule. Export to TXT, MD and PDF. Free, no registration, local browser processing.">
+  <link rel="canonical" href="https://yourminitools.com/tools/loan-calculator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Loan Calculator | YourMiniTools">
+  <meta property="og:description" content="Calculate monthly payment, total interest and amortization schedule. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/loan-calculator.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/loan-calculator">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Loan Calculator | YourMiniTools">
+  <meta name="twitter:description" content="Calculate monthly payment and amortization schedule in one click.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/loan-calculator.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/loan-calculator">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/loan-calculator">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/loan-calculator">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/loan-calculator">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS — jsPDF is NOT loaded here, lazy-loaded on demand -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/download.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/validation.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/loan-calculator.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Loan Calculator",
+    "url": "https://yourminitools.com/tools/loan-calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="Loan Calculator">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.loanCalculator.heading">Loan Calculator</h1>
+      <p class="tool-description" data-i18n="tool.loanCalculator.description">Calculate the monthly payment, total interest and overall cost of your loan. Complete amortization schedule with export to TXT, MD and PDF.</p>
+
+      <!-- Input Section -->
+      <div class="tool-card-container">
+        <h2 class="tool-section-title" data-i18n="tool.loanCalculator.inputTitle">Loan details</h2>
+
+        <div class="form-group">
+          <label class="form-label" for="lc-capital" data-i18n="tool.loanCalculator.capitalLabel">Principal amount ($)</label>
+          <input type="text" id="lc-capital" class="form-input" inputmode="numeric" placeholder="e.g. 150000" data-i18n-placeholder="tool.loanCalculator.capitalPlaceholder" autocomplete="off" spellcheck="false">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="lc-rate" data-i18n="tool.loanCalculator.rateLabel">Annual interest rate (%)</label>
+            <input type="text" id="lc-rate" class="form-input" inputmode="decimal" placeholder="e.g. 3.5" data-i18n-placeholder="tool.loanCalculator.ratePlaceholder" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lc-duration" data-i18n="tool.loanCalculator.durationLabel">Duration</label>
+            <input type="text" id="lc-duration" class="form-input" inputmode="numeric" placeholder="e.g. 20" data-i18n-placeholder="tool.loanCalculator.durationPlaceholder" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lc-duration-type" data-i18n="tool.loanCalculator.unitLabel">Unit</label>
+            <select id="lc-duration-type" class="form-select">
+              <option value="years" data-i18n="tool.loanCalculator.unitYears">Years</option>
+              <option value="months" data-i18n="tool.loanCalculator.unitMonths">Months</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tool-actions">
+          <button type="button" class="btn btn-primary" id="lc-calculate" data-i18n="tool.loanCalculator.calculateBtn">Calculate</button>
+          <button type="button" class="btn btn-secondary" id="lc-reset" data-i18n="tool.loanCalculator.resetBtn">Reset</button>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-card-container" id="lc-results-section" hidden>
+        <h2 class="tool-section-title" data-i18n="tool.loanCalculator.resultsTitle">Summary</h2>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid" id="lc-stats" aria-live="polite">
+          <div class="stat-item">
+            <div class="stat-value" id="lc-monthly-payment">&mdash;</div>
+            <div class="stat-label" data-i18n="tool.loanCalculator.monthlyPayment">Monthly payment</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="lc-total-interest">&mdash;</div>
+            <div class="stat-label" data-i18n="tool.loanCalculator.totalInterest">Total interest</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="lc-total-cost">&mdash;</div>
+            <div class="stat-label" data-i18n="tool.loanCalculator.totalCost">Total cost</div>
+          </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="lc-chart-section">
+          <div class="pie-chart" id="lc-pie-chart" role="img" data-i18n-aria="tool.loanCalculator.pieChartAria" aria-label="Principal and interest proportion chart"></div>
+          <div class="pie-chart-legend">
+            <span class="pie-legend-item">
+              <span class="pie-legend-dot lc-dot-capital"></span>
+              <span data-i18n="tool.loanCalculator.pieLegendCapital">Principal</span>
+            </span>
+            <span class="pie-legend-item">
+              <span class="pie-legend-dot lc-dot-interest"></span>
+              <span data-i18n="tool.loanCalculator.pieLegendInterest">Interest</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amortization Table -->
+      <div class="tool-card-container" id="lc-table-section" hidden>
+        <h2 class="tool-section-title" data-i18n="tool.loanCalculator.tableTitle">Amortization schedule</h2>
+
+        <div class="tool-table-wrapper tool-table-scroll">
+          <table class="tool-table" id="lc-table">
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="tool.loanCalculator.tableMonth">Payment</th>
+                <th scope="col" data-i18n="tool.loanCalculator.tablePayment">Amount ($)</th>
+                <th scope="col" data-i18n="tool.loanCalculator.tablePrincipal">Principal ($)</th>
+                <th scope="col" data-i18n="tool.loanCalculator.tableInterest">Interest ($)</th>
+                <th scope="col" data-i18n="tool.loanCalculator.tableRemaining">Remaining balance ($)</th>
+              </tr>
+            </thead>
+            <tbody id="lc-table-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Export Actions -->
+        <div class="tool-actions">
+          <button type="button" class="btn btn-secondary" id="lc-export-txt" data-i18n="tool.loanCalculator.exportTxt">Export TXT</button>
+          <button type="button" class="btn btn-secondary" id="lc-export-md" data-i18n="tool.loanCalculator.exportMd">Export MD</button>
+          <button type="button" class="btn btn-primary" id="lc-export-pdf" data-i18n="tool.loanCalculator.exportPdf">Export PDF</button>
+        </div>
+      </div>
+
+      <p class="tool-disclaimer" data-i18n="tool.loanCalculator.disclaimer">This tool provides informational simulations based on the data you enter. Results do not constitute financial advice. For decisions regarding loans, consult a qualified professional.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

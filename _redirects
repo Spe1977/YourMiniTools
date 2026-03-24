@@ -1,0 +1,20 @@
+# Redirect dominio scudo
+https://yourmicrotools.com/* https://yourminitools.com/:splat 301
+
+# Clean URL per i tool (senza estensione .html)
+/tools/password-generator    /tools/password-generator.html    200
+/tools/image-converter       /tools/image-converter.html       200
+/tools/unit-converter        /tools/unit-converter.html        200
+/tools/world-clock           /tools/world-clock.html           200
+/tools/word-counter          /tools/word-counter.html          200
+/tools/text-case-converter   /tools/text-case-converter.html   200
+/tools/qr-generator          /tools/qr-generator.html          200
+/tools/loan-calculator       /tools/loan-calculator.html       200
+/tools/social-font-converter /tools/social-font-converter.html 200
+/tools/stopwatch-timer       /tools/stopwatch-timer.html       200
+/tools/color-tool            /tools/color-tool.html            200
+/tools/currency-converter    /tools/currency-converter.html    200
+
+# Pagine di servizio
+/privacy  /privacy.html  200
+/about    /about.html    200

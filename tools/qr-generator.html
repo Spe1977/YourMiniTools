@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free QR Code Generator | YourMiniTools</title>
+  <meta name="description" content="Generate customizable QR Codes for URLs, text, email, phone, Wi-Fi and vCard. Download as PNG. Free, no registration required.">
+  <link rel="canonical" href="https://yourminitools.com/tools/qr-generator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="QR Code Generator | YourMiniTools">
+  <meta property="og:description" content="Generate customizable QR Codes in one click. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/qr-generator.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/qr-generator">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="QR Code Generator | YourMiniTools">
+  <meta name="twitter:description" content="Generate customizable QR Codes in one click.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/qr-generator.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/qr-generator">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/qr-generator">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/qr-generator">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/qr-generator">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/vendor/qr/qrcode.min.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/download.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/qr-generator.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "QR Code Generator",
+    "url": "https://yourminitools.com/tools/qr-generator",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="QR Code Generator">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.qrGenerator.heading">QR Code Generator</h1>
+      <p class="tool-description" data-i18n="tool.qrGenerator.description">Generate customizable QR Codes for URLs, text, email, phone, Wi-Fi and vCard. Real-time preview and PNG download.</p>
+
+      <div class="tool-card-container">
+        <!-- Input type selector -->
+        <div class="form-group">
+          <label class="form-label" for="qr-type" data-i18n="tool.qrGenerator.typeLabel">Content type</label>
+          <select id="qr-type" class="form-select">
+            <option value="url" data-i18n="tool.qrGenerator.typeUrl">URL</option>
+            <option value="text" data-i18n="tool.qrGenerator.typeText">Free text</option>
+            <option value="tel" data-i18n="tool.qrGenerator.typeTel">Phone number</option>
+            <option value="email" data-i18n="tool.qrGenerator.typeEmail">Email</option>
+            <option value="wifi" data-i18n="tool.qrGenerator.typeWifi">Wi-Fi</option>
+            <option value="vcard" data-i18n="tool.qrGenerator.typeVcard">vCard</option>
+          </select>
+        </div>
+
+        <!-- URL input -->
+        <div class="form-group" id="qr-field-url">
+          <label class="form-label" for="qr-input-url" data-i18n="tool.qrGenerator.urlLabel">URL address</label>
+          <input type="url" id="qr-input-url" class="form-input" inputmode="url" placeholder="https://example.com" data-i18n-placeholder="tool.qrGenerator.urlPlaceholder" spellcheck="false">
+        </div>
+
+        <!-- Text input -->
+        <div class="form-group" id="qr-field-text" hidden>
+          <label class="form-label" for="qr-input-text" data-i18n="tool.qrGenerator.textLabel">Text</label>
+          <textarea id="qr-input-text" class="form-textarea" rows="4" placeholder="Enter your text..." data-i18n-placeholder="tool.qrGenerator.textPlaceholder" spellcheck="false"></textarea>
+        </div>
+
+        <!-- Tel input -->
+        <div class="form-group" id="qr-field-tel" hidden>
+          <label class="form-label" for="qr-input-tel" data-i18n="tool.qrGenerator.telLabel">Phone number</label>
+          <input type="tel" id="qr-input-tel" class="form-input" inputmode="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.telPlaceholder" spellcheck="false">
+        </div>
+
+        <!-- Email input -->
+        <div class="form-group" id="qr-field-email" hidden>
+          <label class="form-label" for="qr-input-email" data-i18n="tool.qrGenerator.emailLabel">Email address</label>
+          <input type="email" id="qr-input-email" class="form-input" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.emailPlaceholder" spellcheck="false">
+        </div>
+
+        <!-- WiFi inputs -->
+        <div id="qr-field-wifi" hidden>
+          <div class="form-group">
+            <label class="form-label" for="qr-wifi-ssid" data-i18n="tool.qrGenerator.wifiSsidLabel">Network name (SSID)</label>
+            <input type="text" id="qr-wifi-ssid" class="form-input" placeholder="Wi-Fi network name" data-i18n-placeholder="tool.qrGenerator.wifiSsidPlaceholder" spellcheck="false">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-wifi-pass" data-i18n="tool.qrGenerator.wifiPassLabel">Password</label>
+            <input type="text" id="qr-wifi-pass" class="form-input" placeholder="Network password" data-i18n-placeholder="tool.qrGenerator.wifiPassPlaceholder" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-wifi-enc" data-i18n="tool.qrGenerator.wifiEncLabel">Security</label>
+            <select id="qr-wifi-enc" class="form-select">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass" data-i18n="tool.qrGenerator.wifiEncNone">None</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- vCard inputs -->
+        <div id="qr-field-vcard" hidden>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="qr-vcard-name" data-i18n="tool.qrGenerator.vcardNameLabel">Name</label>
+              <input type="text" id="qr-vcard-name" class="form-input" placeholder="John Doe" data-i18n-placeholder="tool.qrGenerator.vcardNamePlaceholder" spellcheck="false">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="qr-vcard-tel" data-i18n="tool.qrGenerator.vcardTelLabel">Phone</label>
+              <input type="tel" id="qr-vcard-tel" class="form-input" inputmode="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.vcardTelPlaceholder">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-vcard-email" data-i18n="tool.qrGenerator.vcardEmailLabel">Email</label>
+            <input type="email" id="qr-vcard-email" class="form-input" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.vcardEmailPlaceholder">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-vcard-org" data-i18n="tool.qrGenerator.vcardOrgLabel">Organization</label>
+            <input type="text" id="qr-vcard-org" class="form-input" placeholder="Company name (optional)" data-i18n-placeholder="tool.qrGenerator.vcardOrgPlaceholder">
+          </div>
+        </div>
+
+        <!-- Customization -->
+        <h2 class="tool-section-title" data-i18n="tool.qrGenerator.customTitle">Customization</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qr-size" data-i18n="tool.qrGenerator.sizeLabel">Size (px)</label>
+            <select id="qr-size" class="form-select">
+              <option value="128">128 x 128</option>
+              <option value="256" selected>256 x 256</option>
+              <option value="384">384 x 384</option>
+              <option value="512">512 x 512</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-error" data-i18n="tool.qrGenerator.errorLabel">Error correction</label>
+            <select id="qr-error" class="form-select">
+              <option value="L" data-i18n="tool.qrGenerator.errorLow">Low (L — 7%)</option>
+              <option value="M" selected data-i18n="tool.qrGenerator.errorMedium">Medium (M — 15%)</option>
+              <option value="Q" data-i18n="tool.qrGenerator.errorQuartile">High (Q — 25%)</option>
+              <option value="H" data-i18n="tool.qrGenerator.errorHigh">Maximum (H — 30%)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qr-fg" data-i18n="tool.qrGenerator.fgLabel">Foreground color</label>
+            <input type="text" id="qr-fg" class="form-input" value="#000000" maxlength="7" spellcheck="false">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="qr-bg" data-i18n="tool.qrGenerator.bgLabel">Background color</label>
+            <input type="text" id="qr-bg" class="form-input" value="#FFFFFF" maxlength="7" spellcheck="false">
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Preview -->
+      <div class="tool-card-container">
+        <h2 class="tool-section-title" data-i18n="tool.qrGenerator.previewTitle">QR Code Preview</h2>
+        <div id="qr-output" aria-live="polite" role="img" data-i18n-aria="tool.qrGenerator.previewAria" aria-label="Generated QR Code preview"></div>
+
+        <div class="tool-actions tool-actions-center" id="qr-download-section" hidden>
+          <button type="button" class="btn btn-primary" id="qr-download" data-i18n="tool.qrGenerator.downloadBtn">Download PNG</button>
+        </div>
+      </div>
+
+      <p class="tool-disclaimer" data-i18n="tool.qrGenerator.disclaimer">The QR Code is generated entirely in your browser. No data is sent to external servers.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

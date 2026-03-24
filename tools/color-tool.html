@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Color Tool — Color Picker & Image Sampling | YourMiniTools</title>
+  <meta name="description" content="Pick colors in HEX, RGB, HSL or sample pixels from an image with a magnifying lens. Free, no registration, local processing.">
+  <link rel="canonical" href="https://yourminitools.com/tools/color-tool">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Color Tool — Picker & Sampling | YourMiniTools">
+  <meta property="og:description" content="Pick colors or sample pixels from images. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/color-tool.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/color-tool">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Color Tool — Picker & Sampling | YourMiniTools">
+  <meta name="twitter:description" content="Pick colors or sample pixels from images.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/color-tool.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/color-tool">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/color-tool">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/color-tool">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/color-tool">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/validation.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/color-tool.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Color Tool — Picker & Image Sampling",
+    "url": "https://yourminitools.com/tools/color-tool",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="Color Tool">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.colorTool.heading">Color Tool</h1>
+      <p class="tool-description" data-i18n="tool.colorTool.description">Pick colors manually in HEX, RGB, HSL or sample pixels from an image with an 8x magnifying lens.</p>
+
+      <!-- Tabs -->
+      <div class="tool-tabs" role="tablist" data-i18n-aria="tool.colorTool.tabsAria" aria-label="Color mode">
+        <button type="button" class="tool-tab" id="tab-manual" role="tab" aria-selected="true" aria-controls="panel-manual" data-i18n="tool.colorTool.tabManual">Manual Picker</button>
+        <button type="button" class="tool-tab" id="tab-image" role="tab" aria-selected="false" aria-controls="panel-image" data-i18n="tool.colorTool.tabImage">Sample from Image</button>
+      </div>
+
+      <!-- ===== Manual Panel ===== -->
+      <div class="tool-tab-panel" id="panel-manual" role="tabpanel" aria-labelledby="tab-manual" data-active="true">
+        <div class="tool-card-container">
+          <!-- Color preview -->
+          <div class="color-preview" id="ct-preview" data-i18n-aria="tool.colorTool.previewAria" aria-label="Color preview"></div>
+
+          <!-- HEX input -->
+          <div class="form-group">
+            <label class="form-label" for="ct-hex">HEX</label>
+            <input type="text" id="ct-hex" class="form-input" value="#2980b9" maxlength="7" spellcheck="false" autocomplete="off" placeholder="#RRGGBB">
+          </div>
+
+          <!-- RGB inputs -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="ct-r">R</label>
+              <input type="number" id="ct-r" class="form-input" min="0" max="255" value="41" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ct-g">G</label>
+              <input type="number" id="ct-g" class="form-input" min="0" max="255" value="128" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ct-b">B</label>
+              <input type="number" id="ct-b" class="form-input" min="0" max="255" value="185" inputmode="numeric">
+            </div>
+          </div>
+
+          <!-- HSL inputs -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="ct-h">H</label>
+              <input type="number" id="ct-h" class="form-input" min="0" max="360" value="204" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ct-s">S (%)</label>
+              <input type="number" id="ct-s" class="form-input" min="0" max="100" value="64" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ct-l">L (%)</label>
+              <input type="number" id="ct-l" class="form-input" min="0" max="100" value="44" inputmode="numeric">
+            </div>
+          </div>
+
+          <!-- Copy buttons -->
+          <div class="tool-actions">
+            <button type="button" class="btn btn-secondary" id="ct-copy-hex" data-i18n="tool.colorTool.copyHex">Copy HEX</button>
+            <button type="button" class="btn btn-secondary" id="ct-copy-rgb" data-i18n="tool.colorTool.copyRgb">Copy RGB</button>
+            <button type="button" class="btn btn-secondary" id="ct-copy-hsl" data-i18n="tool.colorTool.copyHsl">Copy HSL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Image Panel ===== -->
+      <div class="tool-tab-panel" id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+        <div class="tool-card-container">
+          <!-- File upload -->
+          <div class="form-group">
+            <div class="file-drop" id="ct-file-drop">
+              <svg class="file-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span class="file-drop-text" data-i18n="tool.colorTool.fileDrop"><strong data-i18n-param="action">click to select</strong></span>
+              <span class="file-drop-hint" data-i18n="tool.colorTool.fileHint">PNG, JPG, WebP — max 12 MB</span>
+              <input type="file" id="ct-file-input" accept="image/png,image/jpeg,image/webp" data-i18n-aria="tool.colorTool.fileInputAria" aria-label="Upload image">
+            </div>
+          </div>
+
+          <!-- Canvas for image -->
+          <div class="form-group" id="ct-canvas-wrapper" hidden>
+            <canvas id="ct-canvas" data-i18n-aria="tool.colorTool.canvasAria" aria-label="Uploaded image — click to sample a color"></canvas>
+          </div>
+
+          <!-- Picked color output -->
+          <div id="ct-picked-section" hidden>
+            <div class="color-preview" id="ct-picked-preview" data-i18n-aria="tool.colorTool.pickedPreviewAria" aria-label="Sampled color"></div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value" id="ct-picked-hex">#000000</div>
+                <div class="stat-label">HEX</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="ct-picked-rgb">rgb(0, 0, 0)</div>
+                <div class="stat-label">RGB</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="ct-picked-hsl">hsl(0, 0%, 0%)</div>
+                <div class="stat-label">HSL</div>
+              </div>
+            </div>
+            <div class="tool-actions">
+              <button type="button" class="btn btn-secondary" id="ct-pick-copy-hex" data-i18n="tool.colorTool.copyHex">Copy HEX</button>
+              <button type="button" class="btn btn-secondary" id="ct-pick-copy-rgb" data-i18n="tool.colorTool.copyRgb">Copy RGB</button>
+              <button type="button" class="btn btn-secondary" id="ct-pick-copy-hsl" data-i18n="tool.colorTool.copyHsl">Copy HSL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette -->
+      <div class="tool-card-container" id="ct-palette-section" hidden>
+        <h2 class="tool-section-title" data-i18n="tool.colorTool.paletteTitle">Recent palette</h2>
+        <div class="color-palette" id="ct-palette" data-i18n-aria="tool.colorTool.paletteAria" aria-label="Last 10 selected colors"></div>
+      </div>
+
+      <p class="tool-disclaimer" data-i18n="tool.colorTool.disclaimer">All processing happens locally in your browser. No images are sent to external servers.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

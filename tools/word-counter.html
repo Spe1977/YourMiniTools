@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free Word and Character Counter | YourMiniTools</title>
+  <meta name="description" content="Count words, characters, sentences, paragraphs and reading time in real time. Supports .txt and .md file upload. Free, no registration.">
+  <link rel="canonical" href="https://yourminitools.com/tools/word-counter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Word and Character Counter | YourMiniTools">
+  <meta property="og:description" content="Count words, characters and reading time in real time. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/word-counter.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/word-counter">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Word and Character Counter | YourMiniTools">
+  <meta name="twitter:description" content="Count words, characters and reading time in real time.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/word-counter.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/word-counter">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/word-counter">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/word-counter">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/word-counter">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/download.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/validation.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/word-counter.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Word and Character Counter",
+    "url": "https://yourminitools.com/tools/word-counter",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="Word Counter">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.wordCounter.heading">Word and Character Counter</h1>
+      <p class="tool-description" data-i18n="tool.wordCounter.description">Count words, characters, sentences, paragraphs and estimate reading time in real time. Full UTF-8 support.</p>
+
+      <div class="tool-card-container">
+        <!-- Textarea -->
+        <div class="form-group">
+          <label class="form-label" for="wc-textarea" data-i18n="tool.wordCounter.textareaLabel">Enter or paste your text</label>
+          <textarea id="wc-textarea" class="form-textarea" rows="10" data-i18n-placeholder="tool.wordCounter.textareaPlaceholder" placeholder="Type or paste your text here..." spellcheck="false"></textarea>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="tool.wordCounter.fileLabel">Or upload a file</label>
+          <div class="file-drop" id="wc-file-drop">
+            <svg class="file-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="file-drop-text" data-i18n="tool.wordCounter.fileDrop"><strong data-i18n-param="action">click to select</strong></span>
+            <span class="file-drop-hint" data-i18n="tool.wordCounter.fileHint">.txt or .md, max 5 MB</span>
+            <input type="file" id="wc-file-input" accept=".txt,.md,text/plain,text/markdown" data-i18n-aria="tool.wordCounter.fileInputAria" aria-label="Upload text file">
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="wc-stats" aria-live="polite">
+          <div class="stat-item">
+            <div class="stat-value" id="wc-words">0</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statWords">Words</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-chars">0</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statChars">Characters</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-chars-no-spaces">0</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statCharsNoSpaces">Without spaces</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-sentences">0</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statSentences">Sentences</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-paragraphs">0</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statParagraphs">Paragraphs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-read-time">0 min</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statReadTime">Reading</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="wc-speak-time">0 min</div>
+            <div class="stat-label" data-i18n="tool.wordCounter.statSpeakTime">Speaking</div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="tool-actions">
+          <button type="button" class="btn btn-secondary" id="wc-copy" data-i18n="tool.wordCounter.btnCopy">Copy text</button>
+          <button type="button" class="btn btn-secondary" id="wc-download-txt" data-i18n="tool.wordCounter.btnDownloadTxt">Download .txt</button>
+          <button type="button" class="btn btn-secondary" id="wc-download-md" data-i18n="tool.wordCounter.btnDownloadMd">Download .md</button>
+          <button type="button" class="btn btn-danger" id="wc-clear" data-i18n="tool.wordCounter.btnClear">Clear</button>
+        </div>
+      </div>
+
+      <p class="tool-disclaimer" data-i18n="tool.wordCounter.disclaimer">Text analysis is performed entirely in the browser. No content is transmitted to external servers.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

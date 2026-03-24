@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free Online Stopwatch & Timer | YourMiniTools</title>
+  <meta name="description" content="Stopwatch with laps, countdown timer and Pomodoro mode. Sound notification, high precision. Free, no registration.">
+  <link rel="canonical" href="https://yourminitools.com/tools/stopwatch-timer">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Online Stopwatch & Timer | YourMiniTools">
+  <meta property="og:description" content="Stopwatch with laps and countdown timer. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/stopwatch-timer.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/stopwatch-timer">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Online Stopwatch & Timer | YourMiniTools">
+  <meta name="twitter:description" content="Stopwatch with laps and countdown timer.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/stopwatch-timer.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/stopwatch-timer">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/stopwatch-timer">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/stopwatch-timer">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/stopwatch-timer">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/stopwatch-timer.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Online Stopwatch & Timer",
+    "url": "https://yourminitools.com/tools/stopwatch-timer",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="Stopwatch & Timer">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.stopwatchTimer.heading">Stopwatch & Timer</h1>
+      <p class="tool-description" data-i18n="tool.stopwatchTimer.description">Stopwatch with lap function, countdown timer and Pomodoro mode. High precision with sound notification.</p>
+
+      <!-- Tabs -->
+      <div class="tool-tabs" role="tablist" data-i18n-aria="tool.stopwatchTimer.tabsAria" aria-label="Mode">
+        <button type="button" class="tool-tab" id="tab-stopwatch" role="tab" aria-selected="true" aria-controls="panel-stopwatch" data-i18n="tool.stopwatchTimer.tabStopwatch">Stopwatch</button>
+        <button type="button" class="tool-tab" id="tab-timer" role="tab" aria-selected="false" aria-controls="panel-timer" data-i18n="tool.stopwatchTimer.tabTimer">Timer</button>
+        <button type="button" class="tool-tab" id="tab-pomodoro" role="tab" aria-selected="false" aria-controls="panel-pomodoro" data-i18n="tool.stopwatchTimer.tabPomodoro">Pomodoro</button>
+      </div>
+
+      <!-- ===== Stopwatch Panel ===== -->
+      <div class="tool-tab-panel" id="panel-stopwatch" role="tabpanel" aria-labelledby="tab-stopwatch" data-active="true">
+        <div class="tool-card-container">
+          <div class="display-time" id="sw-display" aria-live="off">
+            00:00:00<span class="display-time-ms">.000</span>
+          </div>
+
+          <div class="tool-actions tool-actions-center">
+            <button type="button" class="btn btn-primary" id="sw-start" data-i18n="tool.stopwatchTimer.start">Start</button>
+            <button type="button" class="btn btn-secondary" id="sw-lap" disabled data-i18n="tool.stopwatchTimer.lap">Lap</button>
+            <button type="button" class="btn btn-danger" id="sw-reset" disabled data-i18n="common.reset">Reset</button>
+          </div>
+
+          <!-- Lap list -->
+          <div id="sw-laps-section" hidden>
+            <h3 class="tool-section-title" data-i18n="tool.stopwatchTimer.lapsTitle">Laps</h3>
+            <div class="lap-list" id="sw-laps" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Timer Panel ===== -->
+      <div class="tool-tab-panel" id="panel-timer" role="tabpanel" aria-labelledby="tab-timer">
+        <div class="tool-card-container">
+          <!-- Timer input -->
+          <div class="form-row" id="tm-input-row">
+            <div class="form-group">
+              <label class="form-label" for="tm-hours" data-i18n="tool.stopwatchTimer.hours">Hours</label>
+              <input type="number" id="tm-hours" class="form-input" min="0" max="99" value="0" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tm-minutes" data-i18n="tool.stopwatchTimer.minutes">Minutes</label>
+              <input type="number" id="tm-minutes" class="form-input" min="0" max="59" value="5" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tm-seconds" data-i18n="tool.stopwatchTimer.seconds">Seconds</label>
+              <input type="number" id="tm-seconds" class="form-input" min="0" max="59" value="0" inputmode="numeric">
+            </div>
+          </div>
+
+          <div class="display-time" id="tm-display" aria-live="off">
+            00:05:00
+          </div>
+
+          <div class="tool-actions tool-actions-center">
+            <button type="button" class="btn btn-primary" id="tm-start" data-i18n="tool.stopwatchTimer.start">Start</button>
+            <button type="button" class="btn btn-danger" id="tm-reset" disabled data-i18n="common.reset">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Pomodoro Panel ===== -->
+      <div class="tool-tab-panel" id="panel-pomodoro" role="tabpanel" aria-labelledby="tab-pomodoro">
+        <div class="tool-card-container">
+          <div id="pm-status" class="tool-section-title" aria-live="polite">Work — 25:00</div>
+
+          <div class="display-time" id="pm-display" aria-live="off">
+            25:00
+          </div>
+
+          <div class="stats-grid" id="pm-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="pm-sessions">0</div>
+              <div class="stat-label" data-i18n="tool.stopwatchTimer.pomodoroSessions">Sessions</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="pm-total-time">0 min</div>
+              <div class="stat-label" data-i18n="tool.stopwatchTimer.pomodoroTotalTime">Total time</div>
+            </div>
+          </div>
+
+          <div class="tool-actions tool-actions-center">
+            <button type="button" class="btn btn-primary" id="pm-start" data-i18n="tool.stopwatchTimer.start">Start</button>
+            <button type="button" class="btn btn-danger" id="pm-reset" disabled data-i18n="common.reset">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="tool-disclaimer" data-i18n="tool.stopwatchTimer.disclaimer">The stopwatch uses <code data-i18n-param="perfNow">performance.now()</code> for high precision. If the tab is in background, time is recalculated when returning to foreground.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

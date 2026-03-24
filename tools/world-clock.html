@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free World Clock | YourMiniTools</title>
+  <meta name="description" content="Compare the time in over 40 cities worldwide in real time. Select up to 4 time zones and view the difference. Free, no registration.">
+  <link rel="canonical" href="https://yourminitools.com/tools/world-clock">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="World Clock | YourMiniTools">
+  <meta property="og:description" content="Compare time zones of over 40 cities worldwide. Free, no registration required.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/world-clock.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/world-clock">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="World Clock | YourMiniTools">
+  <meta name="twitter:description" content="Compare time zones of over 40 cities worldwide.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/world-clock.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/world-clock">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/world-clock">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/world-clock">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/world-clock">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/world-clock.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "World Clock",
+    "url": "https://yourminitools.com/tools/world-clock",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="World Clock">
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page-wide">
+      <h1 class="tool-title" data-i18n="tool.worldClock.heading">World Clock</h1>
+      <p class="tool-description" data-i18n="tool.worldClock.description">Compare the current time in over 40 cities worldwide. Select from 2 to 4 time zones to view differences in real time.</p>
+
+      <div class="tool-card-container">
+        <h2 class="tool-section-title" data-i18n="tool.worldClock.selectTitle">Select cities to compare</h2>
+
+        <!-- City selectors -->
+        <div class="form-group">
+          <label class="form-label" for="wc-city-1" data-i18n="tool.worldClock.city1">City 1</label>
+          <select id="wc-city-1" class="form-select" data-i18n-aria="tool.worldClock.city1Aria" aria-label="Select first city"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wc-city-2" data-i18n="tool.worldClock.city2">City 2</label>
+          <select id="wc-city-2" class="form-select" data-i18n-aria="tool.worldClock.city2Aria" aria-label="Select second city"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wc-city-3"><span data-i18n="tool.worldClock.city3">City 3</span> <span class="form-hint" data-i18n="tool.worldClock.optional">(optional)</span></label>
+          <select id="wc-city-3" class="form-select" data-i18n-aria="tool.worldClock.city3Aria" aria-label="Select third city (optional)">
+            <option value="" data-i18n="tool.worldClock.noneOption">-- None --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wc-city-4"><span data-i18n="tool.worldClock.city4">City 4</span> <span class="form-hint" data-i18n="tool.worldClock.optional">(optional)</span></label>
+          <select id="wc-city-4" class="form-select" data-i18n-aria="tool.worldClock.city4Aria" aria-label="Select fourth city (optional)">
+            <option value="" data-i18n="tool.worldClock.noneOption">-- None --</option>
+          </select>
+        </div>
+
+        <!-- Format toggle -->
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" id="wc-format-12h">
+            <span class="form-check-label" data-i18n="tool.worldClock.format12h">12-hour format (AM/PM)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Clock cards -->
+      <div id="wc-clocks" class="stats-grid" aria-live="polite" role="region" data-i18n-aria="tool.worldClock.clocksAria" aria-label="World clocks"></div>
+
+      <p class="tool-disclaimer" data-i18n="tool.worldClock.disclaimer">Daylight saving time is handled automatically by the browser. Time data comes from your device's time zone, with no calls to external servers.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

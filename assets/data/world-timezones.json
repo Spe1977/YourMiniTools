@@ -1,0 +1,70 @@
+{
+  "continents": [
+    {
+      "name": "Europa",
+      "cities": [
+        { "city": "Roma", "timezone": "Europe/Rome", "country": "Italia" },
+        { "city": "Londra", "timezone": "Europe/London", "country": "Regno Unito" },
+        { "city": "Parigi", "timezone": "Europe/Paris", "country": "Francia" },
+        { "city": "Berlino", "timezone": "Europe/Berlin", "country": "Germania" },
+        { "city": "Madrid", "timezone": "Europe/Madrid", "country": "Spagna" },
+        { "city": "Amsterdam", "timezone": "Europe/Amsterdam", "country": "Paesi Bassi" },
+        { "city": "Mosca", "timezone": "Europe/Moscow", "country": "Russia" },
+        { "city": "Atene", "timezone": "Europe/Athens", "country": "Grecia" },
+        { "city": "Lisbona", "timezone": "Europe/Lisbon", "country": "Portogallo" },
+        { "city": "Varsavia", "timezone": "Europe/Warsaw", "country": "Polonia" },
+        { "city": "Zurigo", "timezone": "Europe/Zurich", "country": "Svizzera" },
+        { "city": "Istanbul", "timezone": "Europe/Istanbul", "country": "Turchia" }
+      ]
+    },
+    {
+      "name": "America",
+      "cities": [
+        { "city": "New York", "timezone": "America/New_York", "country": "USA" },
+        { "city": "Los Angeles", "timezone": "America/Los_Angeles", "country": "USA" },
+        { "city": "Chicago", "timezone": "America/Chicago", "country": "USA" },
+        { "city": "Toronto", "timezone": "America/Toronto", "country": "Canada" },
+        { "city": "Città del Messico", "timezone": "America/Mexico_City", "country": "Messico" },
+        { "city": "San Paolo", "timezone": "America/Sao_Paulo", "country": "Brasile" },
+        { "city": "Buenos Aires", "timezone": "America/Argentina/Buenos_Aires", "country": "Argentina" },
+        { "city": "Lima", "timezone": "America/Lima", "country": "Perù" },
+        { "city": "Bogotà", "timezone": "America/Bogota", "country": "Colombia" },
+        { "city": "Vancouver", "timezone": "America/Vancouver", "country": "Canada" }
+      ]
+    },
+    {
+      "name": "Asia",
+      "cities": [
+        { "city": "Tokyo", "timezone": "Asia/Tokyo", "country": "Giappone" },
+        { "city": "Pechino", "timezone": "Asia/Shanghai", "country": "Cina" },
+        { "city": "Dubai", "timezone": "Asia/Dubai", "country": "Emirati Arabi" },
+        { "city": "Singapore", "timezone": "Asia/Singapore", "country": "Singapore" },
+        { "city": "Hong Kong", "timezone": "Asia/Hong_Kong", "country": "Cina" },
+        { "city": "Mumbai", "timezone": "Asia/Kolkata", "country": "India" },
+        { "city": "Seoul", "timezone": "Asia/Seoul", "country": "Corea del Sud" },
+        { "city": "Bangkok", "timezone": "Asia/Bangkok", "country": "Thailandia" },
+        { "city": "Giacarta", "timezone": "Asia/Jakarta", "country": "Indonesia" },
+        { "city": "Riyadh", "timezone": "Asia/Riyadh", "country": "Arabia Saudita" }
+      ]
+    },
+    {
+      "name": "Africa",
+      "cities": [
+        { "city": "Il Cairo", "timezone": "Africa/Cairo", "country": "Egitto" },
+        { "city": "Lagos", "timezone": "Africa/Lagos", "country": "Nigeria" },
+        { "city": "Nairobi", "timezone": "Africa/Nairobi", "country": "Kenya" },
+        { "city": "Johannesburg", "timezone": "Africa/Johannesburg", "country": "Sudafrica" },
+        { "city": "Casablanca", "timezone": "Africa/Casablanca", "country": "Marocco" }
+      ]
+    },
+    {
+      "name": "Oceania",
+      "cities": [
+        { "city": "Sydney", "timezone": "Australia/Sydney", "country": "Australia" },
+        { "city": "Melbourne", "timezone": "Australia/Melbourne", "country": "Australia" },
+        { "city": "Auckland", "timezone": "Pacific/Auckland", "country": "Nuova Zelanda" },
+        { "city": "Perth", "timezone": "Australia/Perth", "country": "Australia" }
+      ]
+    }
+  ]
+}

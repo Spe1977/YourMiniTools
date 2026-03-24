@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Free Image Converter — JPG PNG WebP | YourMiniTools</title>
+  <meta name="description" content="Convert images between JPG, PNG and WebP for free. Batch up to 10 files, adjustable quality, local browser processing. No upload to servers.">
+  <link rel="canonical" href="https://yourminitools.com/tools/image-converter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Image Converter — JPG PNG WebP | YourMiniTools">
+  <meta property="og:description" content="Convert images between JPG, PNG and WebP in one click. Free, private, no registration.">
+  <meta property="og:image" content="https://yourminitools.com/assets/img/og/image-converter.png">
+  <meta property="og:url" content="https://yourminitools.com/tools/image-converter">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="es_ES">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Image Converter — JPG PNG WebP | YourMiniTools">
+  <meta name="twitter:description" content="Convert images between JPG, PNG and WebP in one click.">
+  <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/image-converter.png">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/image-converter">
+  <link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/image-converter">
+  <link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/image-converter">
+  <link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/image-converter">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.1">
+  <link rel="stylesheet" href="/assets/css/tools.css?v=1.0.0">
+
+  <!-- JS -->
+  <script src="/assets/js/core/notifications.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/clipboard.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/download.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/validation.js?v=1.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=1.0.0" defer></script>
+  <script src="/assets/js/global.js?v=1.0.1" defer></script>
+  <script src="/assets/js/tools/image-converter.js?v=1.0.0" defer></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Image Converter — JPG PNG WebP",
+    "url": "https://yourminitools.com/tools/image-converter",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "it", "es"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "YourMiniTools"
+    }
+  }
+  </script>
+</head>
+<body data-tool-name="Image Converter">
+  <!-- Skip Link -->
+  <a href="#main" class="skip-link" data-i18n="common.skipToContent">Skip to content</a>
+
+  <header class="site-header"></header>
+
+  <main id="main" class="site-main">
+    <div class="tool-page">
+      <h1 class="tool-title" data-i18n="tool.imageConverter.heading">Image Converter</h1>
+      <p class="tool-description" data-i18n="tool.imageConverter.description">Convert images between JPG, PNG and WebP. Up to 10 files at once, adjustable quality. Local browser processing, no files sent to servers.</p>
+
+      <!-- Upload Section -->
+      <div class="tool-card-container">
+        <h2 class="tool-section-title" data-i18n="tool.imageConverter.uploadTitle">Upload images</h2>
+
+        <!-- Drop Zone -->
+        <div class="file-drop" id="ic-drop-zone" role="button" tabindex="0" data-i18n-aria="tool.imageConverter.dropZoneAria" aria-label="Drag images here or click to select">
+          <svg class="file-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <p class="file-drop-text" data-i18n="tool.imageConverter.dropZoneText"><strong data-i18n-param="action">Click</strong></p>
+          <p class="file-drop-hint" data-i18n="tool.imageConverter.dropZoneHint">JPG, PNG, WebP — max 12 MB, max 25 megapixels per file — up to 10 files</p>
+          <input type="file" id="ic-file-input" accept="image/jpeg,image/png,image/webp" multiple data-i18n-aria="tool.imageConverter.fileInputAria" aria-label="Select images">
+        </div>
+
+        <!-- Format & Quality -->
+        <div class="form-group">
+          <label class="form-label" for="ic-format" data-i18n="tool.imageConverter.formatLabel">Output format</label>
+          <select id="ic-format" class="form-select">
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp" selected>WebP</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="ic-quality-group">
+          <label class="form-label" for="ic-quality" data-i18n="tool.imageConverter.qualityLabel"><span class="range-value" id="ic-quality-value" data-i18n-param="value">85</span></label>
+          <input type="range" id="ic-quality" class="form-range" min="10" max="100" value="85" step="5" inputmode="decimal">
+          <span class="form-hint" data-i18n="tool.imageConverter.qualityHint">Applied only to JPG and WebP. PNG is always lossless.</span>
+        </div>
+
+        <!-- Convert Button -->
+        <div class="tool-actions">
+          <button type="button" class="btn btn-primary" id="ic-convert" disabled data-i18n="tool.imageConverter.convertBtn">Convert</button>
+          <button type="button" class="btn btn-secondary" id="ic-clear" hidden data-i18n="tool.imageConverter.clearBtn">Clear all</button>
+        </div>
+
+        <!-- Progress -->
+        <div id="ic-progress-section" hidden>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="ic-progress-bar"></div>
+          </div>
+          <p class="progress-text" id="ic-progress-text" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- File List -->
+      <div class="tool-card-container" id="ic-file-list-section" hidden>
+        <h2 class="tool-section-title" data-i18n="tool.imageConverter.fileListTitle">Uploaded files</h2>
+        <div id="ic-file-list" role="list" data-i18n-aria="tool.imageConverter.fileListAria" aria-label="Uploaded files list"></div>
+      </div>
+
+      <!-- Results -->
+      <div class="tool-card-container" id="ic-results-section" hidden>
+        <h2 class="tool-section-title" data-i18n="tool.imageConverter.resultsTitle">Results</h2>
+        <div id="ic-results" role="list" data-i18n-aria="tool.imageConverter.resultsAria" aria-label="Conversion results" aria-live="polite"></div>
+      </div>
+
+      <!-- Privacy note -->
+      <p class="tool-disclaimer" data-i18n="tool.imageConverter.disclaimer">All images are processed locally in your browser via the Canvas API. No files are uploaded to external servers.</p>
+
+      <a href="/" class="tool-back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-i18n="common.backToHome">Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Development files
+server.py
+sito.md
+API.md
+chat.md
+P.md
+CLAUDE.md
+.claude/
+.playwright-mcp/
+/img/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests (dev only)
+tests/

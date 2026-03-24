@@ -1,0 +1,22 @@
+{
+  "name": "YourMiniTools",
+  "short_name": "YourMiniTools",
+  "description": "12 free, fast, privacy-first browser tools. No registration, no tracking.",
+  "lang": "en",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2576ae",
+  "icons": [
+    {
+      "src": "/assets/img/favicons/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/img/favicons/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
