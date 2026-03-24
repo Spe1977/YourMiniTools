@@ -838,6 +838,10 @@ body {
   transform: translateY(0);
 }
 
+body.has-cookie-banner {
+  padding-bottom: 60px;
+}
+
 .cookie-banner-inner {
   max-width: var(--max-width);
   margin: 0 auto;

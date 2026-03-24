@@ -198,11 +198,13 @@
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         banner.setAttribute('data-visible', 'true');
+        document.body.classList.add('has-cookie-banner');
       });
     });
 
     document.getElementById('cookie-accept').addEventListener('click', function () {
       banner.setAttribute('data-visible', 'false');
+      document.body.classList.remove('has-cookie-banner');
       banner.addEventListener('transitionend', function () {
         banner.remove();
       }, { once: true });
