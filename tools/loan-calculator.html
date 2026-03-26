@@ -92,14 +92,26 @@
         <h2 class="tool-section-title" data-i18n="tool.loanCalculator.inputTitle">Loan details</h2>
 
         <div class="form-group">
+          <label class="form-label" for="lc-mode" data-i18n="tool.loanCalculator.modeLabel">Calculation mode</label>
+          <select id="lc-mode" class="form-select">
+            <option value="payment" data-i18n="tool.loanCalculator.modePayment">Find monthly payment</option>
+            <option value="rate"    data-i18n="tool.loanCalculator.modeRate">Find interest rate</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label class="form-label" for="lc-capital" data-i18n="tool.loanCalculator.capitalLabel">Principal amount ($)</label>
           <input type="text" id="lc-capital" class="form-input" inputmode="numeric" placeholder="e.g. 150000" data-i18n-placeholder="tool.loanCalculator.capitalPlaceholder" autocomplete="off" spellcheck="false">
         </div>
 
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group" id="lc-rate-group">
             <label class="form-label" for="lc-rate" data-i18n="tool.loanCalculator.rateLabel">Annual interest rate (%)</label>
             <input type="text" id="lc-rate" class="form-input" inputmode="decimal" placeholder="e.g. 3.5" data-i18n-placeholder="tool.loanCalculator.ratePlaceholder" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form-group" id="lc-payment-group" hidden>
+            <label class="form-label" for="lc-payment" data-i18n="tool.loanCalculator.paymentLabel">Monthly payment</label>
+            <input type="text" id="lc-payment" class="form-input" inputmode="decimal" placeholder="e.g. 850" data-i18n-placeholder="tool.loanCalculator.paymentPlaceholder" autocomplete="off" spellcheck="false">
           </div>
           <div class="form-group">
             <label class="form-label" for="lc-duration" data-i18n="tool.loanCalculator.durationLabel">Duration</label>
@@ -128,7 +140,7 @@
         <div class="stats-grid" id="lc-stats" aria-live="polite">
           <div class="stat-item">
             <div class="stat-value" id="lc-monthly-payment">&mdash;</div>
-            <div class="stat-label" data-i18n="tool.loanCalculator.monthlyPayment">Monthly payment</div>
+            <div class="stat-label" id="lc-stat1-label" data-i18n="tool.loanCalculator.monthlyPayment">Monthly payment</div>
           </div>
           <div class="stat-item">
             <div class="stat-value" id="lc-total-interest">&mdash;</div>
