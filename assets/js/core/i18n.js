@@ -11,7 +11,7 @@
   var SUPPORTED_LOCALES = ['en', 'it', 'es'];
   var DEFAULT_LOCALE = 'en';
   var STORAGE_KEY = 'ymt-lang';
-  var VERSION = '1.0.0';
+  var VERSION = '1.0.2';
 
   var currentLocale = DEFAULT_LOCALE;
   var translations = {};
