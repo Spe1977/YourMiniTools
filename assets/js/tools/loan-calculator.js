@@ -18,8 +18,12 @@
   }
 
   // --- DOM refs -----------------------------------------------
+  var modeSelect    = document.getElementById('lc-mode');
   var capitalInput = document.getElementById('lc-capital');
+  var rateGroup     = document.getElementById('lc-rate-group');
   var rateInput = document.getElementById('lc-rate');
+  var paymentGroup  = document.getElementById('lc-payment-group');
+  var paymentInput  = document.getElementById('lc-payment');
   var durationInput = document.getElementById('lc-duration');
   var durationTypeSelect = document.getElementById('lc-duration-type');
   var calculateBtn = document.getElementById('lc-calculate');
@@ -33,6 +37,7 @@
 
   var tableSection = document.getElementById('lc-table-section');
   var tableBody = document.getElementById('lc-table-body');
+  var stat1LabelEl  = document.getElementById('lc-stat1-label');
 
   var exportTxtBtn = document.getElementById('lc-export-txt');
   var exportMdBtn = document.getElementById('lc-export-md');
@@ -42,6 +47,7 @@
   var lastResult = null; // { capital, rate, months, monthlyPayment, totalInterest, totalCost, schedule }
 
   // --- Events -------------------------------------------------
+  modeSelect.addEventListener('change', onModeChange);
   calculateBtn.addEventListener('click', calculate);
   resetBtn.addEventListener('click', resetAll);
   exportTxtBtn.addEventListener('click', function () { exportText('txt'); });
@@ -49,7 +55,7 @@
   exportPdfBtn.addEventListener('click', exportPDF);
 
   // Allow Enter key to trigger calculation
-  [capitalInput, rateInput, durationInput].forEach(function (el) {
+  [capitalInput, rateInput, paymentInput, durationInput].forEach(function (el) {
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -58,9 +64,35 @@
     });
   });
 
+  // --- Mode change --------------------------------------------
+
+  function onModeChange() {
+    var isRateMode = modeSelect.value === 'rate';
+    if (isRateMode) {
+      rateGroup.setAttribute('hidden', '');
+      paymentGroup.removeAttribute('hidden');
+    } else {
+      rateGroup.removeAttribute('hidden');
+      paymentGroup.setAttribute('hidden', '');
+    }
+    YMT.clearFieldError(rateInput);
+    YMT.clearFieldError(paymentInput);
+    resultsSection.setAttribute('hidden', '');
+    tableSection.setAttribute('hidden', '');
+    lastResult = null;
+  }
+
   // --- Calculation --------------------------------------------
 
   function calculate() {
+    if (modeSelect.value === 'rate') {
+      calculateRate();
+    } else {
+      calculatePayment();
+    }
+  }
+
+  function calculatePayment() {
     // Validate inputs
     var valid = true;
 
@@ -138,10 +170,124 @@
       monthlyPayment: monthlyPayment,
       totalInterest: totalInterest,
       totalCost: totalCost,
-      schedule: schedule
+      schedule: schedule,
+      mode: 'payment'
     };
 
     renderResults();
+  }
+
+  function calculateRate() {
+    var valid = true;
+
+    var capitalRaw = capitalInput.value.replace(/\s/g, '').replace(/,/g, '.');
+    var capital = parseFloat(capitalRaw);
+    if (isNaN(capital) || capital <= 0 || capital > 100000000) {
+      YMT.showFieldError(capitalInput, t('tool.loanCalculator.errorCapital'));
+      valid = false;
+    } else {
+      YMT.clearFieldError(capitalInput);
+    }
+
+    var paymentRaw = paymentInput.value.replace(/\s/g, '').replace(/,/g, '.');
+    var monthlyPayment = parseFloat(paymentRaw);
+    if (isNaN(monthlyPayment) || monthlyPayment <= 0) {
+      YMT.showFieldError(paymentInput, t('tool.loanCalculator.errorPayment'));
+      valid = false;
+    } else {
+      YMT.clearFieldError(paymentInput);
+    }
+
+    var durationRaw = durationInput.value.replace(/\s/g, '');
+    var duration = parseInt(durationRaw, 10);
+    var isYears = durationTypeSelect.value === 'years';
+    var maxDuration = isYears ? 50 : 600;
+    var unitLabel = isYears ? t('tool.loanCalculator.unitYears').toLowerCase() : t('tool.loanCalculator.unitMonths').toLowerCase();
+    if (isNaN(duration) || duration < 1 || duration > maxDuration) {
+      YMT.showFieldError(durationInput, t('tool.loanCalculator.errorDuration', { max: maxDuration, unit: unitLabel }));
+      valid = false;
+    } else {
+      YMT.clearFieldError(durationInput);
+    }
+
+    if (!valid) return;
+
+    var months = isYears ? duration * 12 : duration;
+
+    // Business-logic checks (require both capital and payment to be valid)
+    if (monthlyPayment <= capital / months) {
+      YMT.showFieldError(paymentInput, t('tool.loanCalculator.errorPaymentTooLow'));
+      return;
+    }
+
+    var maxMonthlyRate = 0.30 / 12;
+    if (monthlyPayment > amortPayment(capital, maxMonthlyRate, months)) {
+      YMT.showFieldError(paymentInput, t('tool.loanCalculator.errorPaymentTooHigh'));
+      return;
+    }
+
+    var annualRate = bisectRate(capital, monthlyPayment, months);
+    var monthlyRate = annualRate / 100 / 12;
+    var totalCost = monthlyPayment * months;
+    var totalInterest = totalCost - capital;
+
+    // Build amortization schedule using the found rate
+    var schedule = [];
+    var remaining = capital;
+    for (var i = 1; i <= months; i++) {
+      var interestPart = remaining * monthlyRate;
+      var capitalPart = monthlyPayment - interestPart;
+      remaining = remaining - capitalPart;
+      if (remaining < 0.005) remaining = 0;
+
+      schedule.push({
+        month: i,
+        payment: monthlyPayment,
+        capitalPart: capitalPart,
+        interestPart: interestPart,
+        remaining: remaining
+      });
+    }
+
+    lastResult = {
+      capital: capital,
+      annualRate: annualRate,
+      months: months,
+      monthlyPayment: monthlyPayment,
+      totalInterest: totalInterest,
+      totalCost: totalCost,
+      schedule: schedule,
+      mode: 'rate'
+    };
+
+    renderResults();
+  }
+
+  /**
+   * French amortization formula: monthly payment for a given monthly rate.
+   */
+  function amortPayment(capital, monthlyRate, months) {
+    if (monthlyRate < 1e-12) return capital / months;
+    var factor = Math.pow(1 + monthlyRate, months);
+    return capital * (monthlyRate * factor) / (factor - 1);
+  }
+
+  /**
+   * Bisection method: find annual rate (%) such that amortPayment matches
+   * the target payment. Precondition: caller verified payment is in range.
+   * 60 iterations → precision ~2.6e-19 annual rate, far below sub-cent.
+   */
+  function bisectRate(capital, payment, months) {
+    var lo = 1e-9, hi = 0.30 / 12, mid;
+    for (var iter = 0; iter < 60; iter++) {
+      mid = (lo + hi) / 2;
+      if (amortPayment(capital, mid, months) > payment) {
+        hi = mid;
+      } else {
+        lo = mid;
+      }
+    }
+    return mid * 12 * 100; // monthly rate → annual percentage
   }
 
   // --- Rendering ----------------------------------------------
@@ -153,8 +299,14 @@
     resultsSection.removeAttribute('hidden');
     tableSection.removeAttribute('hidden');
 
-    // Summary stats
-    monthlyPaymentEl.textContent = formatCurrency(lastResult.monthlyPayment);
+    // Summary stats — first card is mode-dependent
+    if (lastResult.mode === 'rate') {
+      monthlyPaymentEl.textContent = lastResult.annualRate.toFixed(4) + ' %';
+      stat1LabelEl.textContent = t('tool.loanCalculator.annualRate');
+    } else {
+      monthlyPaymentEl.textContent = formatCurrency(lastResult.monthlyPayment);
+      stat1LabelEl.textContent = t('tool.loanCalculator.monthlyPayment');
+    }
     totalInterestEl.textContent = formatCurrency(lastResult.totalInterest);
     totalCostEl.textContent = formatCurrency(lastResult.totalCost);
 
@@ -418,11 +570,18 @@
   function resetAll() {
     capitalInput.value = '';
     rateInput.value = '';
+    paymentInput.value = '';
     durationInput.value = '';
     durationTypeSelect.selectedIndex = 0;
+    modeSelect.selectedIndex = 0;
+
+    // Restore field visibility to payment-mode defaults
+    rateGroup.removeAttribute('hidden');
+    paymentGroup.setAttribute('hidden', '');
 
     YMT.clearFieldError(capitalInput);
     YMT.clearFieldError(rateInput);
+    YMT.clearFieldError(paymentInput);
     YMT.clearFieldError(durationInput);
 
     resultsSection.setAttribute('hidden', '');
@@ -431,6 +590,7 @@
     monthlyPaymentEl.textContent = '\u2014';
     totalInterestEl.textContent = '\u2014';
     totalCostEl.textContent = '\u2014';
+    stat1LabelEl.textContent = t('tool.loanCalculator.monthlyPayment');
 
     pieChartEl.style.setProperty('background-image', 'none');
 
