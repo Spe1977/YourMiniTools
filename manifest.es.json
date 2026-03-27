@@ -1,9 +1,9 @@
 {
   "name": "YourMiniTools",
   "short_name": "YourMiniTools",
-  "description": "12 free, fast, privacy-first browser tools. No registration, no tracking.",
-  "lang": "en",
-  "start_url": "/",
+  "description": "12 herramientas web gratuitas, rápidas y respetuosas con la privacidad. Sin registro, sin rastreo.",
+  "lang": "es",
+  "start_url": "/?lang=es",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2576ae",
@@ -22,23 +22,23 @@
   ],
   "shortcuts": [
     {
-      "name": "Password Generator",
-      "url": "/tools/password-generator",
+      "name": "Generador de Contraseñas",
+      "url": "/tools/password-generator?lang=es",
       "icons": [{ "src": "/assets/img/favicons/favicon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Loan Calculator",
-      "url": "/tools/loan-calculator",
+      "name": "Calculadora de Préstamos",
+      "url": "/tools/loan-calculator?lang=es",
       "icons": [{ "src": "/assets/img/favicons/favicon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Currency Converter",
-      "url": "/tools/currency-converter",
+      "name": "Conversor de Divisas",
+      "url": "/tools/currency-converter?lang=es",
       "icons": [{ "src": "/assets/img/favicons/favicon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "QR Generator",
-      "url": "/tools/qr-generator",
+      "name": "Generador QR",
+      "url": "/tools/qr-generator?lang=es",
       "icons": [{ "src": "/assets/img/favicons/favicon-192.png", "sizes": "192x192" }]
     }
   ]

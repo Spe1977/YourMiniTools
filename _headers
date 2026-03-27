@@ -28,3 +28,9 @@
 
 /manifest.json
   Cache-Control: no-cache
+
+/manifest.it.json
+  Cache-Control: no-cache
+
+/manifest.es.json
+  Cache-Control: no-cache

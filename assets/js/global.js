@@ -119,9 +119,21 @@
     var langSelect = document.getElementById('ymt-lang-select');
     if (langSelect) {
       langSelect.addEventListener('change', function () {
+        var locale = langSelect.value;
         if (window.YMT && window.YMT.i18n && window.YMT.i18n.setLocale) {
-          window.YMT.i18n.setLocale(langSelect.value);
+          window.YMT.i18n.setLocale(locale);
         }
+        // Update URL to reflect chosen language (enables Google to index each language version)
+        try {
+          var params = new URLSearchParams(window.location.search);
+          if (locale === 'en') {
+            params.delete('lang');
+          } else {
+            params.set('lang', locale);
+          }
+          var newSearch = params.toString() ? '?' + params.toString() : '';
+          history.replaceState(null, '', window.location.pathname + newSearch + window.location.hash);
+        } catch (e) { /* history API not supported */ }
       });
     }
   }
@@ -239,6 +251,14 @@
     if (parts[1]) para.appendChild(document.createTextNode(parts[1]));
   }
 
+  /* --- Manifest switcher ------------------------------------- */
+  function updateManifest(locale) {
+    var link = document.querySelector('link[rel="manifest"]');
+    if (!link) return;
+    var manifests = { en: '/manifest.json', it: '/manifest.it.json', es: '/manifest.es.json' };
+    link.href = manifests[locale] || '/manifest.json';
+  }
+
   /* --- Init -------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
     buildHeader();
@@ -248,10 +268,15 @@
     updatePrivacyContact();
 
     // Re-apply translations when i18n module finishes loading
-    document.addEventListener('languagechange', function () {
+    document.addEventListener('languagechange', function (e) {
       buildHeader();
       buildFooter();
       updatePrivacyContact();
+
+      // Swap manifest to language-specific version
+      if (e.detail && e.detail.locale) {
+        updateManifest(e.detail.locale);
+      }
 
       // Apply translations to cookie banner if still visible
       if (window.YMT && window.YMT.i18n && window.YMT.i18n.applyTranslations) {

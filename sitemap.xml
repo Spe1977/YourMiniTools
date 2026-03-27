@@ -8,8 +8,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/"/>
   </url>
 
@@ -19,8 +19,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/password-generator"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/password-generator"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/password-generator"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/password-generator?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/password-generator?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/password-generator"/>
   </url>
 
@@ -30,8 +30,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/image-converter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/image-converter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/image-converter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/image-converter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/image-converter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/image-converter"/>
   </url>
 
@@ -41,8 +41,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/unit-converter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/unit-converter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/unit-converter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/unit-converter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/unit-converter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/unit-converter"/>
   </url>
 
@@ -52,8 +52,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/world-clock"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/world-clock"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/world-clock"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/world-clock?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/world-clock?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/world-clock"/>
   </url>
 
@@ -63,8 +63,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/word-counter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/word-counter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/word-counter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/word-counter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/word-counter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/word-counter"/>
   </url>
 
@@ -74,8 +74,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/text-case-converter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/text-case-converter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/text-case-converter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/text-case-converter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/text-case-converter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/text-case-converter"/>
   </url>
 
@@ -85,8 +85,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/qr-generator"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/qr-generator"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/qr-generator"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/qr-generator?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/qr-generator?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/qr-generator"/>
   </url>
 
@@ -96,8 +96,8 @@
     <lastmod>2026-03-27</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/loan-calculator"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/loan-calculator"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/loan-calculator"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/loan-calculator?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/loan-calculator?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/loan-calculator"/>
   </url>
 
@@ -107,8 +107,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/social-font-converter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/social-font-converter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/social-font-converter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/social-font-converter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/social-font-converter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/social-font-converter"/>
   </url>
 
@@ -118,8 +118,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/stopwatch-timer"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/stopwatch-timer"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/stopwatch-timer"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/stopwatch-timer?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/stopwatch-timer?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/stopwatch-timer"/>
   </url>
 
@@ -129,8 +129,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/color-tool"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/color-tool"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/color-tool"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/color-tool?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/color-tool?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/color-tool"/>
   </url>
 
@@ -140,8 +140,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/tools/currency-converter"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/currency-converter"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/currency-converter"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/tools/currency-converter?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/tools/currency-converter?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/tools/currency-converter"/>
   </url>
 
@@ -151,8 +151,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/privacy"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/privacy"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/privacy?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/privacy?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/privacy"/>
   </url>
 
@@ -162,8 +162,8 @@
     <lastmod>2026-03-23</lastmod>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://yourminitools.com/about"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/about"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/about"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://yourminitools.com/about?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://yourminitools.com/about?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://yourminitools.com/about"/>
   </url>
 

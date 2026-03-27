@@ -1,2 +1,18 @@
 # Redirect dominio scudo
 https://yourmicrotools.com/* https://yourminitools.com/:splat 301
+
+# Normalizza trailing slash su pagine non-root (evita contenuto duplicato)
+/about/                   /about                    301
+/privacy/                 /privacy                  301
+/tools/password-generator/   /tools/password-generator   301
+/tools/image-converter/      /tools/image-converter      301
+/tools/unit-converter/       /tools/unit-converter       301
+/tools/world-clock/          /tools/world-clock          301
+/tools/word-counter/         /tools/word-counter         301
+/tools/text-case-converter/  /tools/text-case-converter  301
+/tools/qr-generator/         /tools/qr-generator         301
+/tools/loan-calculator/      /tools/loan-calculator      301
+/tools/social-font-converter/ /tools/social-font-converter 301
+/tools/stopwatch-timer/      /tools/stopwatch-timer      301
+/tools/color-tool/           /tools/color-tool           301
+/tools/currency-converter/   /tools/currency-converter   301

@@ -21,6 +21,15 @@
   /* --- Locale Detection -------------------------------------- */
 
   function detectLocale() {
+    // 0. URL parameter ?lang= (SEO: Googlebot crawls these URLs for each language)
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var langParam = params.get('lang');
+      if (langParam && SUPPORTED_LOCALES.indexOf(langParam) !== -1) {
+        return langParam;
+      }
+    } catch (e) { /* URLSearchParams not supported */ }
+
     // 1. localStorage (user's explicit choice)
     try {
       var stored = localStorage.getItem(STORAGE_KEY);
