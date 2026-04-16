@@ -163,6 +163,8 @@
       errorEl = document.createElement('span');
       errorEl.className = 'form-error';
       errorEl.setAttribute('role', 'alert');
+      errorEl.setAttribute('aria-live', 'assertive');
+      errorEl.setAttribute('aria-atomic', 'true');
       errorEl.setAttribute('data-visible', 'false');
       if (group) {
         group.appendChild(errorEl);

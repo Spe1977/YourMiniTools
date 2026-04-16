@@ -958,8 +958,8 @@
 }
 
 .ic-result-error {
-  border-color: var(--color-error, #c0392b);
-  color: var(--color-error, #c0392b);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 [data-disabled="true"] {
@@ -987,7 +987,7 @@
 }
 
 .lc-dot-interest {
-  background-color: var(--color-error, #e74c3c);
+  background-color: var(--color-danger);
 }
 
 /* --- Currency Converter ------------------------------------- */
