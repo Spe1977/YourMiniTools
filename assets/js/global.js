@@ -233,7 +233,7 @@
     var parts = template.split('{aboutLink}');
     para.appendChild(document.createTextNode(parts[0] || ''));
     var link = document.createElement('a');
-    link.href = '/about.html';
+    link.href = '/about';
     link.textContent = linkText;
     para.appendChild(link);
     if (parts[1]) para.appendChild(document.createTextNode(parts[1]));
