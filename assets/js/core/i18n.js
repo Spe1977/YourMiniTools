@@ -189,7 +189,7 @@
     // og:locale
     var ogLocale = document.querySelector('meta[property="og:locale"]');
     if (ogLocale) {
-      var localeMap = { en: 'en_US', it: 'it_IT', es: 'es_ES', ru: 'ru_RU', zh: 'zh_CN' };
+      var localeMap = { en: 'en_US', it: 'it_IT', es: 'es_ES' };
       ogLocale.setAttribute('content', localeMap[currentLocale] || 'en_US');
     }
   }

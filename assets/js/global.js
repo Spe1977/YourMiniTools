@@ -1,5 +1,5 @@
 /* ============================================================
-   YourMiniTools — Global JS v1.1.0
+   YourMiniTools — Global JS v1.0.3
    Theme toggle, header/footer injection, back-to-top,
    cookie banner, language switcher (i18n integration)
    Constraints: CSP script-src 'self', no inline styles, no eval

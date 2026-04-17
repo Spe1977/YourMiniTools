@@ -337,7 +337,7 @@
   function getLocale() {
     if (window.YMT && window.YMT.i18n && window.YMT.i18n.getLocale) {
       var loc = window.YMT.i18n.getLocale();
-      var map = { en: 'en-US', it: 'it-IT', es: 'es-ES', ru: 'ru-RU', zh: 'zh-CN' };
+      var map = { en: 'en-US', it: 'it-IT', es: 'es-ES' };
       return map[loc] || loc;
     }
     return 'en-US';
