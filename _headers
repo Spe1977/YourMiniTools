@@ -5,7 +5,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.frankfurter.dev; media-src 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'; manifest-src 'self'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.frankfurter.dev https://cloudflareinsights.com; media-src 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'; manifest-src 'self'
 
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate
