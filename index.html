@@ -32,8 +32,8 @@
   <meta name="twitter:image" content="https://yourminitools.com/assets/img/og/homepage.png">
 
   <!-- Theme Color -->
-  <meta name="theme-color" content="#2576ae" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#6471dc" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1018" media="(prefers-color-scheme: dark)">
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico">
@@ -43,12 +43,12 @@
   <link rel="manifest" href="/manifest.json">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="/assets/css/global.css?v=1.0.3">
+  <link rel="stylesheet" href="/assets/css/global.css?v=2.0.0">
 
   <!-- JS -->
-  <script src="/assets/js/core/notifications.js?v=1.0.3" defer></script>
-  <script src="/assets/js/core/i18n.js?v=1.0.3" defer></script>
-  <script src="/assets/js/global.js?v=1.0.3" defer></script>
+  <script src="/assets/js/core/notifications.js?v=2.0.0" defer></script>
+  <script src="/assets/js/core/i18n.js?v=2.0.0" defer></script>
+  <script src="/assets/js/global.js?v=2.0.0" defer></script>
 
   <!-- Schema.org: WebSite -->
   <script type="application/ld+json">
@@ -94,118 +94,160 @@
 
   <main id="main" class="main-content">
     <section class="hero">
-      <h1 class="hero-title" data-i18n="home.hero">Simple tools. Instant results.</h1>
+      <span class="hero-badge">
+        <span class="hero-badge-dot" aria-hidden="true"></span>
+        <span data-i18n="home.heroBadge">12 free tools &middot; No tracking &middot; Local browser</span>
+      </span>
+      <h1 class="hero-title">
+        <span data-i18n="home.hero">Simple tools. Instant results.</span>
+      </h1>
       <p class="hero-subtitle" data-i18n="home.heroSub">12 free micro-tools that run directly in your browser. No registration, no tracking.</p>
     </section>
 
     <div class="tools-grid">
 
       <!-- Tool 1: Password Generator -->
-      <a href="/tools/password-generator" class="tool-card">
+      <a href="/tools/password-generator" class="tool-card" data-tool-color="violet">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool1.title">Password Generator</span>
         <span class="tool-card-desc" data-i18n="home.tool1.desc">Secure random passwords with strength estimation</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 2: Image Converter -->
-      <a href="/tools/image-converter" class="tool-card">
+      <a href="/tools/image-converter" class="tool-card" data-tool-color="peach">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool2.title">Image Converter</span>
         <span class="tool-card-desc" data-i18n="home.tool2.desc">Convert JPG, PNG and WebP locally in your browser</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 3: Unit Converter -->
-      <a href="/tools/unit-converter" class="tool-card">
+      <a href="/tools/unit-converter" class="tool-card" data-tool-color="teal">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool3.title">Unit Converter</span>
         <span class="tool-card-desc" data-i18n="home.tool3.desc">Length, weight, temperature, volume and more</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 4: World Clock -->
-      <a href="/tools/world-clock" class="tool-card">
+      <a href="/tools/world-clock" class="tool-card" data-tool-color="sky">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool4.title">World Clock</span>
         <span class="tool-card-desc" data-i18n="home.tool4.desc">Compare time across cities worldwide</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 5: Word Counter -->
-      <a href="/tools/word-counter" class="tool-card">
+      <a href="/tools/word-counter" class="tool-card" data-tool-color="sage">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool5.title">Word Counter</span>
         <span class="tool-card-desc" data-i18n="home.tool5.desc">Words, characters, sentences and reading time</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 6: Text Case Converter -->
-      <a href="/tools/text-case-converter" class="tool-card">
+      <a href="/tools/text-case-converter" class="tool-card" data-tool-color="pink">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool6.title">Text Case Converter</span>
         <span class="tool-card-desc" data-i18n="home.tool6.desc">UPPERCASE, lowercase, Title Case and other variants</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 7: QR Code Generator -->
-      <a href="/tools/qr-generator" class="tool-card">
+      <a href="/tools/qr-generator" class="tool-card" data-tool-color="slate">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool7.title">QR Code Generator</span>
         <span class="tool-card-desc" data-i18n="home.tool7.desc">Create QR codes for URLs, text, Wi-Fi and contacts</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 8: Loan Calculator -->
-      <a href="/tools/loan-calculator" class="tool-card">
+      <a href="/tools/loan-calculator" class="tool-card" data-tool-color="amber">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="7" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool8.title">Loan Calculator</span>
         <span class="tool-card-desc" data-i18n="home.tool8.desc">Monthly payment, amortization schedule and PDF export</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 9: Social Font Generator -->
-      <a href="/tools/social-font-converter" class="tool-card">
+      <a href="/tools/social-font-converter" class="tool-card" data-tool-color="fuchsia">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool9.title">Social Font Generator</span>
         <span class="tool-card-desc" data-i18n="home.tool9.desc">Unicode styled text for social media bios and posts</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 10: Stopwatch & Timer -->
-      <a href="/tools/stopwatch-timer" class="tool-card">
+      <a href="/tools/stopwatch-timer" class="tool-card" data-tool-color="coral">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3l-2 2"/><path d="M19 3l2 2"/><line x1="12" y1="1" x2="12" y2="3"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool10.title">Stopwatch & Timer</span>
         <span class="tool-card-desc" data-i18n="home.tool10.desc">Precise stopwatch with laps and timer with alarm</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 11: Color Tool -->
-      <a href="/tools/color-tool" class="tool-card">
+      <a href="/tools/color-tool" class="tool-card" data-tool-color="cyan">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool11.title">Color Tool</span>
         <span class="tool-card-desc" data-i18n="home.tool11.desc">Color picker, palette and format conversion</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
       <!-- Tool 12: Currency Converter -->
-      <a href="/tools/currency-converter" class="tool-card">
+      <a href="/tools/currency-converter" class="tool-card" data-tool-color="emerald">
         <span class="tool-card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </span>
         <span class="tool-card-title" data-i18n="home.tool12.title">Currency Converter</span>
         <span class="tool-card-desc" data-i18n="home.tool12.desc">ECB reference exchange rates updated periodically</span>
+        <span class="tool-card-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
 
     </div>
