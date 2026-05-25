@@ -1,7 +1,7 @@
 /* ============================================================
    YourMiniTools — Global JS v1.0.3
    Theme toggle, header/footer injection, back-to-top,
-   cookie banner, language switcher (i18n integration)
+   language switcher (i18n integration)
    Constraints: CSP script-src 'self', no inline styles, no eval
    Note: innerHTML usage is safe here — all content is hardcoded
    constants or escaped via escapeHTML(). No user input is used.
@@ -12,7 +12,6 @@
 
   /* --- Constants --------------------------------------------- */
   var THEME_KEY = 'ymt-theme';
-  var COOKIE_KEY = 'ymt-cookie-seen';
   var SCROLL_THRESHOLD = 300;
 
   /* --- Theme ------------------------------------------------- */
@@ -174,50 +173,6 @@
     }, { passive: true });
   }
 
-  /* --- Cookie Banner ----------------------------------------- */
-  function buildCookieBanner() {
-    try { if (localStorage.getItem(COOKIE_KEY)) return; } catch (e) { return; }
-
-    var banner = document.createElement('div');
-    banner.className = 'cookie-banner';
-    banner.setAttribute('role', 'status');
-    banner.setAttribute('aria-live', 'polite');
-
-    /* Safe: hardcoded strings only */
-    banner.innerHTML =
-      '<div class="cookie-banner-inner">' +
-        '<p class="cookie-banner-text">' +
-          '<span data-i18n="cookie.text">This site does not use its own cookies. Cloudflare infrastructure may set technical cookies.</span> ' +
-          '<a href="/privacy" data-i18n="cookie.moreInfo">More info</a>' +
-        '</p>' +
-        '<button class="btn btn-primary" id="cookie-accept" type="button" data-i18n="cookie.accept">OK, got it</button>' +
-      '</div>';
-    document.body.appendChild(banner);
-
-    // Two-frame delay so the CSS transition animates in
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        banner.setAttribute('data-visible', 'true');
-        document.body.classList.add('has-cookie-banner');
-      });
-    });
-
-    document.getElementById('cookie-accept').addEventListener('click', function () {
-      banner.setAttribute('data-visible', 'false');
-      document.body.classList.remove('has-cookie-banner');
-      var removed = false;
-      function removeBanner() {
-        if (removed) return;
-        removed = true;
-        banner.remove();
-      }
-      banner.addEventListener('transitionend', removeBanner, { once: true });
-      // Fallback if transition doesn't fire (prefers-reduced-motion: reduce)
-      setTimeout(removeBanner, 500);
-      try { localStorage.setItem(COOKIE_KEY, '1'); } catch (e) { /* quota */ }
-    });
-  }
-
   /* --- Privacy Contact Paragraph (preserves <a> during i18n) -- */
   function updatePrivacyContact() {
     var para = document.querySelector('.privacy-contact-para');
@@ -244,7 +199,6 @@
     buildHeader();
     buildFooter();
     buildBackToTop();
-    buildCookieBanner();
     updatePrivacyContact();
 
     // Re-apply translations when i18n module finishes loading
@@ -253,7 +207,7 @@
       buildFooter();
       updatePrivacyContact();
 
-      // Apply translations to cookie banner if still visible
+      // Re-apply translations to the freshly rebuilt header/footer
       if (window.YMT && window.YMT.i18n && window.YMT.i18n.applyTranslations) {
         window.YMT.i18n.applyTranslations();
       }
