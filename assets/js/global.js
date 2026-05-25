@@ -187,7 +187,7 @@
     banner.innerHTML =
       '<div class="cookie-banner-inner">' +
         '<p class="cookie-banner-text">' +
-          '<span data-i18n="cookie.text">This site does not use its own cookies. Cloudflare infrastructure may set technical cookies.</span> ' +
+          '<span data-i18n="cookie.text">This site shows ads via Google AdSense and may use third-party cookies. EEA, UK and Switzerland visitors are asked for consent separately.</span> ' +
           '<a href="/privacy" data-i18n="cookie.moreInfo">More info</a>' +
         '</p>' +
         '<button class="btn btn-primary" id="cookie-accept" type="button" data-i18n="cookie.accept">OK, got it</button>' +
