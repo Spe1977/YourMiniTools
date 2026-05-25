@@ -74,10 +74,6 @@
   "home.tool12.title": "Convertitore Valute",
   "home.tool12.desc": "Tassi di cambio BCE di riferimento aggiornati periodicamente",
 
-  "cookie.text": "Questo sito mostra annunci tramite Google AdSense e pu\u00f2 utilizzare cookie di terze parti. Agli utenti di SEE, Regno Unito e Svizzera viene richiesto il consenso separatamente.",
-  "cookie.moreInfo": "Maggiori info",
-  "cookie.accept": "OK, ho capito",
-
   "page.privacy.title": "Privacy \u2014 YourMiniTools",
   "page.privacy.metaDescription": "Informativa privacy di YourMiniTools: cookie, pubblicità Google AdSense, elaborazione dati e consenso GDPR.",
   "page.privacy.ogDescription": "Informativa privacy di YourMiniTools.",
@@ -87,7 +83,6 @@
   "page.privacy.cookies.title": "Cookie",
   "page.privacy.cookies.text": "Questo sito non imposta cookie di tracciamento, analisi o profilazione propri. Due chiavi localStorage sono utilizzate per il funzionamento tecnico:",
   "page.privacy.cookies.theme": "{key} \u2014 salva la preferenza del tema (chiaro/scuro).",
-  "page.privacy.cookies.banner": "{key} \u2014 registra la chiusura del banner informativo.",
   "page.privacy.cookies.lang": "{key} \u2014 salva la preferenza della lingua.",
   "page.privacy.cookies.cloudflare": "L\u2019infrastruttura hosting Cloudflare potrebbe impostare cookie tecnici propri (es. {cookie}). Ci\u00f2 non pu\u00f2 essere escluso completamente.",
   "page.privacy.processing.title": "Elaborazione Dati",

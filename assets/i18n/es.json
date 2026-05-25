@@ -74,10 +74,6 @@
   "home.tool12.title": "Conversor de Divisas",
   "home.tool12.desc": "Tipos de cambio de referencia del BCE actualizados peri\u00f3dicamente",
 
-  "cookie.text": "Este sitio muestra anuncios mediante Google AdSense y puede utilizar cookies de terceros. A los usuarios del EEE, Reino Unido y Suiza se les solicita el consentimiento por separado.",
-  "cookie.moreInfo": "M\u00e1s informaci\u00f3n",
-  "cookie.accept": "OK, entendido",
-
   "page.privacy.title": "Privacidad \u2014 YourMiniTools",
   "page.privacy.metaDescription": "Pol\u00edtica de privacidad de YourMiniTools: cookies, publicidad de Google AdSense, procesamiento de datos y consentimiento RGPD.",
   "page.privacy.ogDescription": "Pol\u00edtica de privacidad de YourMiniTools.",
@@ -87,7 +83,6 @@
   "page.privacy.cookies.title": "Cookies",
   "page.privacy.cookies.text": "Este sitio no establece cookies propias de seguimiento, an\u00e1lisis o perfilado. Se utilizan dos claves de localStorage para el funcionamiento t\u00e9cnico:",
   "page.privacy.cookies.theme": "{key} \u2014 guarda la preferencia de tema (claro/oscuro).",
-  "page.privacy.cookies.banner": "{key} \u2014 registra el cierre del banner informativo.",
   "page.privacy.cookies.lang": "{key} \u2014 guarda la preferencia de idioma.",
   "page.privacy.cookies.cloudflare": "La infraestructura de hosting de Cloudflare puede establecer sus propias cookies t\u00e9cnicas (ej. {cookie}). Esto no puede excluirse completamente.",
   "page.privacy.processing.title": "Procesamiento de Datos",

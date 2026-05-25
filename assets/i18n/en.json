@@ -74,10 +74,6 @@
   "home.tool12.title": "Currency Converter",
   "home.tool12.desc": "ECB reference exchange rates updated periodically",
 
-  "cookie.text": "This site shows ads via Google AdSense and may use third-party cookies. EEA, UK and Switzerland visitors are asked for consent separately.",
-  "cookie.moreInfo": "More info",
-  "cookie.accept": "OK, got it",
-
   "page.privacy.title": "Privacy \u2014 YourMiniTools",
   "page.privacy.metaDescription": "YourMiniTools privacy policy: cookies, Google AdSense advertising, data processing and GDPR consent.",
   "page.privacy.ogDescription": "YourMiniTools privacy policy.",
@@ -87,7 +83,6 @@
   "page.privacy.cookies.title": "Cookies",
   "page.privacy.cookies.text": "This site does not set its own tracking, analytics, or profiling cookies. Two localStorage keys are used for technical operation:",
   "page.privacy.cookies.theme": "{key} \u2014 saves theme preference (light/dark).",
-  "page.privacy.cookies.banner": "{key} \u2014 records the dismissal of the informational banner.",
   "page.privacy.cookies.lang": "{key} \u2014 saves language preference.",
   "page.privacy.cookies.cloudflare": "Cloudflare hosting infrastructure may set its own technical cookies (e.g. {cookie}). This cannot be excluded completely.",
   "page.privacy.processing.title": "Data Processing",
