@@ -1,7 +1,7 @@
 {
   "name": "YourMiniTools",
   "short_name": "YourMiniTools",
-  "description": "12 free, fast, privacy-first browser tools. No registration, no tracking.",
+  "description": "12 free, fast, privacy-first browser tools. No registration; your data is processed locally.",
   "lang": "en",
   "start_url": "/",
   "display": "standalone",
