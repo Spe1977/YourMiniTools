@@ -71,7 +71,6 @@
   // --- State --------------------------------------------------
   var rates = null;       // { base: 'EUR', date: '...', rates: { USD: 1.08, ... } }
   var ratesTimestamp = 0;  // ms epoch when rates were fetched/cached
-  var isFromCache = false;
   var isManualMode = false;
   var debounceTimer = null;
 
@@ -136,7 +135,6 @@
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
       rates = cached.data;
       ratesTimestamp = cached.timestamp;
-      isFromCache = false; // fresh cache (within TTL) = treated as live data
       showStatus(null);
       convert();
       return;
@@ -147,7 +145,6 @@
       .then(function (data) {
         rates = data;
         ratesTimestamp = Date.now();
-        isFromCache = false;
         saveToCache(data);
         showStatus(null);
         convert();
@@ -157,7 +154,6 @@
         if (cached) {
           rates = cached.data;
           ratesTimestamp = cached.timestamp;
-          isFromCache = true;
           var dateStr = formatTimestamp(ratesTimestamp);
           showStatus(t('tool.currencyConverter.statusStaleCache', { date: dateStr }));
           convert();
@@ -196,7 +192,6 @@
       .then(function (data) {
         rates = data;
         ratesTimestamp = Date.now();
-        isFromCache = false;
         saveToCache(data);
         showStatus(null);
         convert();
@@ -204,7 +199,6 @@
       .catch(function () {
         // Use existing rates with cross-rate calculation
         if (rates) {
-          isFromCache = true;
           var dateStr = formatTimestamp(ratesTimestamp);
           showStatus(t('tool.currencyConverter.statusCacheUsed', { date: dateStr }));
           convert();

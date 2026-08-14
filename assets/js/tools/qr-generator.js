@@ -22,7 +22,6 @@
   var typeSelect, sizeSelect, errorSelect, fgInput, bgInput;
   var outputEl, downloadSection, btnDownload;
   var debounceTimer;
-  var qrInstance = null;
 
   // Input fields by type
   var fields = {};
@@ -192,7 +191,7 @@
     var errorMap = { L: 1, M: 0, Q: 3, H: 2 };
 
     try {
-      qrInstance = new QRCode(outputEl, {
+      new QRCode(outputEl, {
         text: content,
         width: size,
         height: size,

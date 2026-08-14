@@ -6,8 +6,12 @@ chat.md
 P.md
 CLAUDE.md
 .claude/
+.gemini/
 .playwright-mcp/
 /img/
+tests/axe.min.js
+__pycache__/
+*.pyc
 
 # IDE
 .vscode/
@@ -16,6 +20,3 @@ CLAUDE.md
 # OS
 .DS_Store
 Thumbs.db
-
-# Tests (dev only)
-tests/

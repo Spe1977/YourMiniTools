@@ -24,13 +24,13 @@
   }
 
   var REFRESH_MS = 1000;
-  var MAX_CITIES = 4;
 
   var selects = [];
   var formatCheckbox;
   var clocksContainer;
   var timezoneData = null;
   var intervalId = null;
+  var renderedCards = [];
 
   /* --- Init -------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
@@ -50,34 +50,29 @@
         var savedValues = selects.map(function (s) { return s.value; });
         populateSelects();
         selects.forEach(function (s, i) { if (savedValues[i]) s.value = savedValues[i]; });
-        updateClocks();
+        rebuildCards();
       }
     });
   });
 
   /* --- Load timezone data ------------------------------------ */
   function loadTimezones() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/assets/data/world-timezones.json', true);
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          timezoneData = JSON.parse(xhr.responseText);
-          populateSelects();
-          bindEvents();
-          updateClocks();
-          intervalId = setInterval(updateClocks, REFRESH_MS);
-        } catch (e) {
-          showError(t('tool.worldClock.errorLoad'));
-        }
-      } else {
+    fetch('/assets/data/world-timezones.json?v=1.0.3')
+      .then(function (response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        timezoneData = data;
+        populateSelects();
+        bindEvents();
+        rebuildCards();
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(tickClocks, REFRESH_MS);
+      })
+      .catch(function () {
         showError(t('tool.worldClock.errorLoadFailed'));
-      }
-    };
-    xhr.onerror = function () {
-      showError(t('tool.worldClock.errorNetwork'));
-    };
-    xhr.send();
+      });
   }
 
   function showError(msg) {
@@ -143,18 +138,21 @@
   /* --- Bind events ------------------------------------------- */
   function bindEvents() {
     selects.forEach(function (select) {
-      select.addEventListener('change', updateClocks);
+      select.addEventListener('change', rebuildCards);
     });
-    formatCheckbox.addEventListener('change', updateClocks);
+    formatCheckbox.addEventListener('change', tickClocks);
   }
 
-  /* --- Update clocks ----------------------------------------- */
-  function updateClocks() {
+  /* --- Rebuild clock cards (only when selection/language changes) - */
+  function rebuildCards() {
     if (!timezoneData) return;
 
-    var use12h = formatCheckbox.checked;
-    var now = new Date();
-    var locale = currentLocale();
+    renderedCards = [];
+
+    // Clear previous container content
+    while (clocksContainer.firstChild) {
+      clocksContainer.removeChild(clocksContainer.firstChild);
+    }
 
     // Collect selected timezones
     var selected = [];
@@ -167,12 +165,6 @@
       }
     });
 
-    // Build clock cards
-    // Clear previous
-    while (clocksContainer.firstChild) {
-      clocksContainer.removeChild(clocksContainer.firstChild);
-    }
-
     if (selected.length < 2) {
       var msg = document.createElement('p');
       msg.className = 'form-hint';
@@ -181,16 +173,80 @@
       return;
     }
 
-    // Reference timezone (first selected) for offset calculation
-    var refOffset = getUtcOffset(now, selected[0].timezone);
+    var fragment = document.createDocumentFragment();
 
     selected.forEach(function (item, idx) {
       var card = document.createElement('div');
       card.className = 'stat-item';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', t('tool.worldClock.copyTimeAria', { city: item.label }));
 
-      // Time
+      var timeEl = document.createElement('div');
+      timeEl.className = 'stat-value';
+
+      var labelEl = document.createElement('div');
+      labelEl.className = 'stat-label';
+      labelEl.textContent = item.label;
+
+      var dateEl = document.createElement('div');
+      dateEl.className = 'form-hint';
+
+      var diffEl = document.createElement('div');
+      diffEl.className = 'form-hint';
+
+      card.appendChild(timeEl);
+      card.appendChild(labelEl);
+      card.appendChild(dateEl);
+      if (idx > 0) {
+        card.appendChild(diffEl);
+      }
+
+      var cardEntry = {
+        card: card,
+        timeEl: timeEl,
+        labelEl: labelEl,
+        dateEl: dateEl,
+        diffEl: diffEl,
+        timezone: item.timezone,
+        label: item.label,
+        index: idx,
+        latestCopyText: ''
+      };
+
+      card.addEventListener('click', function () {
+        if (cardEntry.latestCopyText) {
+          window.YMT.copyToClipboard(cardEntry.latestCopyText);
+        }
+      });
+      card.addEventListener('keydown', function (e) {
+        if ((e.key === 'Enter' || e.key === ' ') && cardEntry.latestCopyText) {
+          e.preventDefault();
+          window.YMT.copyToClipboard(cardEntry.latestCopyText);
+        }
+      });
+
+      fragment.appendChild(card);
+      renderedCards.push(cardEntry);
+    });
+
+    clocksContainer.appendChild(fragment);
+    tickClocks();
+  }
+
+  /* --- Tick Clocks (fast in-place text update without DOM churn) - */
+  function tickClocks() {
+    if (!renderedCards.length) return;
+
+    var use12h = formatCheckbox.checked;
+    var now = new Date();
+    var locale = currentLocale();
+
+    var refOffset = getUtcOffset(now, renderedCards[0].timezone);
+
+    renderedCards.forEach(function (entry) {
       var timeFormatter = new Intl.DateTimeFormat(locale, {
-        timeZone: item.timezone,
+        timeZone: entry.timezone,
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
@@ -198,7 +254,7 @@
       });
 
       var dateFormatter = new Intl.DateTimeFormat(locale, {
-        timeZone: item.timezone,
+        timeZone: entry.timezone,
         weekday: 'short',
         day: 'numeric',
         month: 'short'
@@ -207,58 +263,21 @@
       var timeStr = timeFormatter.format(now);
       var dateStr = dateFormatter.format(now);
 
-      // Offset difference from first city
-      var thisOffset = getUtcOffset(now, item.timezone);
-      var diff = thisOffset - refOffset;
-      var diffStr = '';
-      if (idx > 0) {
+      entry.timeEl.textContent = timeStr;
+      entry.dateEl.textContent = dateStr;
+      entry.latestCopyText = entry.label + ': ' + timeStr + ' (' + dateStr + ')';
+
+      if (entry.index > 0) {
+        var thisOffset = getUtcOffset(now, entry.timezone);
+        var diff = thisOffset - refOffset;
         var diffHours = diff / 60;
         if (diffHours === 0) {
-          diffStr = t('tool.worldClock.sameTime');
+          entry.diffEl.textContent = t('tool.worldClock.sameTime');
         } else {
           var sign = diffHours > 0 ? '+' : '';
-          diffStr = sign + diffHours + 'h';
+          entry.diffEl.textContent = sign + diffHours + 'h';
         }
       }
-
-      var timeEl = document.createElement('div');
-      timeEl.className = 'stat-value';
-      timeEl.textContent = timeStr;
-
-      var labelEl = document.createElement('div');
-      labelEl.className = 'stat-label';
-      labelEl.textContent = item.label;
-
-      var dateEl = document.createElement('div');
-      dateEl.className = 'form-hint';
-      dateEl.textContent = dateStr;
-
-      card.appendChild(timeEl);
-      card.appendChild(labelEl);
-      card.appendChild(dateEl);
-
-      if (diffStr) {
-        var diffEl = document.createElement('div');
-        diffEl.className = 'form-hint';
-        diffEl.textContent = diffStr;
-        card.appendChild(diffEl);
-      }
-
-      // Click to copy time
-      card.setAttribute('tabindex', '0');
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', t('tool.worldClock.copyTimeAria', { city: item.label }));
-      card.addEventListener('click', function () {
-        window.YMT.copyToClipboard(item.label + ': ' + timeStr + ' (' + dateStr + ')');
-      });
-      card.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          window.YMT.copyToClipboard(item.label + ': ' + timeStr + ' (' + dateStr + ')');
-        }
-      });
-
-      clocksContainer.appendChild(card);
     });
   }
 

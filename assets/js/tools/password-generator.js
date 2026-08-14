@@ -23,7 +23,7 @@
   var AMBIGUOUS     = '0OoIl1';
 
   /* --- DOM refs ---------------------------------------------- */
-  var lengthSlider, lengthValue;
+  var lengthSlider;
   var cbUpper, cbLower, cbNumbers, cbSymbols, cbExclude;
   var btnGenerate, outputEl, outputDisplay;
   var strengthSection, strengthBar, strengthLabel;
@@ -35,7 +35,6 @@
   /* --- Init -------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
     lengthSlider = document.getElementById('pw-length');
-    lengthValue  = document.getElementById('pw-length-value');
     cbUpper      = document.getElementById('pw-upper');
     cbLower      = document.getElementById('pw-lower');
     cbNumbers    = document.getElementById('pw-numbers');

@@ -104,8 +104,8 @@ table {
   /* Semantic accents (kept for compat) */
   --color-success:       #4cb88a;
   --color-success-hover: #3fa67a;
-  --color-danger:        #e57373;
-  --color-danger-hover:  #d35e5e;
+  --color-danger:        #c0392b;
+  --color-danger-hover:  #a93226;
   --color-warning:       #e8b257;
 
   /* Borders & Dividers */
@@ -231,18 +231,18 @@ table {
 }
 
 /* --- Per-tool accent palette (12 pastel hues) --------------- */
-[data-tool-color="violet"]  { --accent: #8378e2; --accent-hover: #6f64d3; }
-[data-tool-color="peach"]   { --accent: #e89770; --accent-hover: #d8825a; }
-[data-tool-color="teal"]    { --accent: #3eb6b0; --accent-hover: #34a09b; }
-[data-tool-color="sky"]     { --accent: #5aa7e1; --accent-hover: #4a94cd; }
-[data-tool-color="sage"]    { --accent: #6cbf86; --accent-hover: #57ad72; }
-[data-tool-color="pink"]    { --accent: #e58aa3; --accent-hover: #d6738e; }
-[data-tool-color="slate"]   { --accent: #7d8dcc; --accent-hover: #6a7bbf; }
-[data-tool-color="amber"]   { --accent: #e0a651; --accent-hover: #cd933e; }
-[data-tool-color="fuchsia"] { --accent: #cc83d4; --accent-hover: #b86dc1; }
-[data-tool-color="coral"]   { --accent: #ec8472; --accent-hover: #db6f5d; }
-[data-tool-color="cyan"]    { --accent: #4eb6cf; --accent-hover: #3da3bd; }
-[data-tool-color="emerald"] { --accent: #4eb88a; --accent-hover: #3ea675; }
+[data-tool-color="violet"]  { --accent: #6f64d3; --accent-hover: #5d51c5; }
+[data-tool-color="peach"]   { --accent: #c46638; --accent-hover: #b0572b; }
+[data-tool-color="teal"]    { --accent: #1f8a84; --accent-hover: #18726d; }
+[data-tool-color="sky"]     { --accent: #2d7ebc; --accent-hover: #226b9f; }
+[data-tool-color="sage"]    { --accent: #378652; --accent-hover: #2c7043; }
+[data-tool-color="pink"]    { --accent: #be4869; --accent-hover: #a83a57; }
+[data-tool-color="slate"]   { --accent: #5569b3; --accent-hover: #45579d; }
+[data-tool-color="amber"]   { --accent: #8c5b0b; --accent-hover: #764b07; }
+[data-tool-color="fuchsia"] { --accent: #a34cae; --accent-hover: #8f3d9a; }
+[data-tool-color="coral"]   { --accent: #c44f3b; --accent-hover: #ad402d; }
+[data-tool-color="cyan"]    { --accent: #1e839c; --accent-hover: #166f85; }
+[data-tool-color="emerald"] { --accent: #2a8a5f; --accent-hover: #21734f; }
 
 /* --- Base --------------------------------------------------- */
 body {
@@ -727,7 +727,7 @@ body::before {
 
 .footer-copy {
   font-size: 0.8125rem;
-  color: var(--color-text-subtle);
+  color: var(--color-text-muted);
 }
 
 /* --- Back to Top -------------------------------------------- */

@@ -28,7 +28,6 @@
   var fileInput = document.getElementById('ic-file-input');
   var formatSelect = document.getElementById('ic-format');
   var qualitySlider = document.getElementById('ic-quality');
-  var qualityValue = document.getElementById('ic-quality-value');
   var qualityGroup = document.getElementById('ic-quality-group');
   var convertBtn = document.getElementById('ic-convert');
   var clearBtn = document.getElementById('ic-clear');
@@ -260,14 +259,6 @@
     progressSection.removeAttribute('hidden');
     resultsSection.removeAttribute('hidden');
 
-    // Revoke ObjectURLs from previous batch before clearing DOM
-    var prevResults = resultsEl.querySelectorAll('.btn-primary');
-    prevResults.forEach(function (btn) {
-      if (btn._blobUrl) {
-        URL.revokeObjectURL(btn._blobUrl);
-      }
-    });
-
     // Clear previous results
     while (resultsEl.firstChild) {
       resultsEl.removeChild(resultsEl.firstChild);
@@ -338,13 +329,11 @@
 
           var baseName = entry.file.name.replace(/\.[^.]+$/, '');
           var fileName = baseName + '.' + ext;
-          var resultUrl = URL.createObjectURL(blob);
 
           resolve({
             originalName: entry.file.name,
             originalSize: entry.file.size,
             fileName: fileName,
-            blobUrl: resultUrl,
             blob: blob,
             width: w,
             height: h,
@@ -397,7 +386,6 @@
     dlBtn.className = 'btn btn-primary btn-sm';
     dlBtn.textContent = t('tool.imageConverter.downloadBtn');
     dlBtn.setAttribute('aria-label', t('tool.imageConverter.downloadAria', { name: result.fileName }));
-    dlBtn._blobUrl = result.blobUrl; // store for cleanup on clearAll
     dlBtn.addEventListener('click', function () {
       YMT.downloadFile(result.blob, result.fileName);
     });
@@ -445,15 +433,6 @@
     fileListSection.setAttribute('hidden', '');
     resultsSection.setAttribute('hidden', '');
     progressSection.setAttribute('hidden', '');
-
-    // Revoke any pending result ObjectURLs before clearing DOM
-    var resultItems = resultsEl.querySelectorAll('.ic-result-item');
-    resultItems.forEach(function (item) {
-      var dlBtn = item.querySelector('.btn-primary');
-      if (dlBtn && dlBtn._blobUrl) {
-        URL.revokeObjectURL(dlBtn._blobUrl);
-      }
-    });
 
     while (fileListEl.firstChild) {
       fileListEl.removeChild(fileListEl.firstChild);
