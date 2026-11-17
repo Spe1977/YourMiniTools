@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
@@ -118,16 +120,19 @@
         <!-- Swap -->
         <div class="tool-actions tool-actions-center">
           <button type="button" class="btn-swap" id="uc-swap" data-i18n-aria="tool.unitConverter.swapAria" aria-label="Swap units">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
           </button>
         </div>
 
         <!-- Output Row -->
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" id="uc-output-label" data-i18n="tool.unitConverter.resultLabel">Result</label>
-            <div class="tool-output tool-output-lg tool-output-copyable" id="uc-output-value" role="status" aria-live="polite" aria-labelledby="uc-output-label" tabindex="0" data-i18n-aria="tool.unitConverter.resultAria" aria-label="Click to copy result">
+            <span class="form-label" id="uc-output-label" data-i18n="tool.unitConverter.resultLabel">Result</span>
+            <div class="tool-output tool-output-lg" id="uc-output-value" role="status" aria-live="polite" aria-labelledby="uc-output-label">
               <span class="tool-output-empty" data-i18n="tool.unitConverter.enterValue">Enter a value</span>
+            </div>
+            <div class="tool-output-actions" id="uc-copy-section" hidden>
+              <button type="button" class="btn btn-secondary btn-sm" id="uc-copy" data-i18n="common.copy">Copy</button>
             </div>
           </div>
           <div class="form-group">
@@ -140,7 +145,7 @@
       <p class="tool-disclaimer" data-i18n="tool.unitConverter.disclaimer">Conversions are calculated locally in the browser with up to 10 decimal digits of precision.</p>
 
       <a href="/" class="tool-back-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="common.backToHome">Back to Home</span>
       </a>
     </div>

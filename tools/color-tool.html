@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
 
   <!-- SEO -->
   <title>Color Tool — Color Picker & Image Sampling | YourMiniTools</title>
-  <meta name="description" content="Pick colors in HEX, RGB, HSL or sample pixels from an image with a magnifying lens. Free, no registration, local processing.">
+  <meta name="description" content="Pick colors in HEX, RGB, HSL or sample pixels from an image. Free, no registration, local processing.">
   <link rel="canonical" href="https://yourminitools.com/tools/color-tool">
 
   <!-- Open Graph -->
@@ -87,16 +89,16 @@
   <main id="main" class="site-main">
     <div class="tool-page">
       <h1 class="tool-title" data-i18n="tool.colorTool.heading">Color Tool</h1>
-      <p class="tool-description" data-i18n="tool.colorTool.description">Pick colors manually in HEX, RGB, HSL or sample pixels from an image with an 8x magnifying lens.</p>
+      <p class="tool-description" data-i18n="tool.colorTool.description">Pick colors manually in HEX, RGB, HSL or sample pixels from an image.</p>
 
       <!-- Tabs -->
       <div class="tool-tabs" role="tablist" data-i18n-aria="tool.colorTool.tabsAria" aria-label="Color mode">
-        <button type="button" class="tool-tab" id="tab-manual" role="tab" aria-selected="true" aria-controls="panel-manual" data-i18n="tool.colorTool.tabManual">Manual Picker</button>
-        <button type="button" class="tool-tab" id="tab-image" role="tab" aria-selected="false" aria-controls="panel-image" data-i18n="tool.colorTool.tabImage">Sample from Image</button>
+        <button type="button" class="tool-tab" id="tab-manual" role="tab" aria-selected="true" tabindex="0" data-i18n="tool.colorTool.tabManual">Manual Picker</button>
+        <button type="button" class="tool-tab" id="tab-image" role="tab" aria-selected="false" tabindex="-1" data-i18n="tool.colorTool.tabImage">Sample from Image</button>
       </div>
 
       <!-- ===== Manual Panel ===== -->
-      <div class="tool-tab-panel" id="panel-manual" role="tabpanel" aria-labelledby="tab-manual" data-active="true">
+      <div class="tool-tab-panel" id="panel-manual" role="tabpanel" aria-labelledby="tab-manual">
         <div class="tool-card-container">
           <!-- Color preview -->
           <div class="color-preview" id="ct-preview" data-i18n-aria="tool.colorTool.previewAria" aria-label="Color preview"></div>
@@ -111,15 +113,15 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="ct-r">R</label>
-              <input type="number" id="ct-r" class="form-input" min="0" max="255" value="41" inputmode="numeric">
+              <input type="text" id="ct-r" class="form-input" inputmode="numeric" pattern="[0-9]*" value="41" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
               <label class="form-label" for="ct-g">G</label>
-              <input type="number" id="ct-g" class="form-input" min="0" max="255" value="128" inputmode="numeric">
+              <input type="text" id="ct-g" class="form-input" inputmode="numeric" pattern="[0-9]*" value="128" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
               <label class="form-label" for="ct-b">B</label>
-              <input type="number" id="ct-b" class="form-input" min="0" max="255" value="185" inputmode="numeric">
+              <input type="text" id="ct-b" class="form-input" inputmode="numeric" pattern="[0-9]*" value="185" autocomplete="off" spellcheck="false">
             </div>
           </div>
 
@@ -127,15 +129,15 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="ct-h">H</label>
-              <input type="number" id="ct-h" class="form-input" min="0" max="360" value="204" inputmode="numeric">
+              <input type="text" id="ct-h" class="form-input" inputmode="numeric" pattern="[0-9]*" value="204" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
               <label class="form-label" for="ct-s">S (%)</label>
-              <input type="number" id="ct-s" class="form-input" min="0" max="100" value="64" inputmode="numeric">
+              <input type="text" id="ct-s" class="form-input" inputmode="numeric" pattern="[0-9]*" value="64" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
               <label class="form-label" for="ct-l">L (%)</label>
-              <input type="number" id="ct-l" class="form-input" min="0" max="100" value="44" inputmode="numeric">
+              <input type="text" id="ct-l" class="form-input" inputmode="numeric" pattern="[0-9]*" value="44" autocomplete="off" spellcheck="false">
             </div>
           </div>
 
@@ -149,16 +151,16 @@
       </div>
 
       <!-- ===== Image Panel ===== -->
-      <div class="tool-tab-panel" id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+      <div class="tool-tab-panel" id="panel-image" role="tabpanel" aria-labelledby="tab-image" hidden>
         <div class="tool-card-container">
           <!-- File upload -->
           <div class="form-group">
-            <div class="file-drop" id="ct-file-drop">
-              <svg class="file-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <label class="file-drop" id="ct-file-drop" for="ct-file-input">
+              <svg class="file-drop-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <span class="file-drop-text" data-i18n="tool.colorTool.fileDrop"><strong data-i18n-param="action">click to select</strong></span>
               <span class="file-drop-hint" data-i18n="tool.colorTool.fileHint">PNG, JPG, WebP — max 12 MB</span>
               <input type="file" id="ct-file-input" accept="image/png,image/jpeg,image/webp" data-i18n-aria="tool.colorTool.fileInputAria" aria-label="Upload image">
-            </div>
+            </label>
           </div>
 
           <!-- Canvas for image -->
@@ -201,7 +203,7 @@
       <p class="tool-disclaimer" data-i18n="tool.colorTool.disclaimer">All processing happens locally in your browser. No images are sent to external servers.</p>
 
       <a href="/" class="tool-back-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="common.backToHome">Back to Home</span>
       </a>
     </div>

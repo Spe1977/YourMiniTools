@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
@@ -123,12 +125,12 @@
       </div>
 
       <!-- Clock cards -->
-      <div id="wc-clocks" class="stats-grid" aria-live="polite" role="region" data-i18n-aria="tool.worldClock.clocksAria" aria-label="World clocks"></div>
+      <div id="wc-clocks" class="stats-grid" aria-live="off" role="region" data-i18n-aria="tool.worldClock.clocksAria" aria-label="World clocks"></div>
 
       <p class="tool-disclaimer" data-i18n="tool.worldClock.disclaimer">Daylight saving time is handled automatically by the browser. Time data comes from your device's time zone, with no calls to external servers.</p>
 
       <a href="/" class="tool-back-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="common.backToHome">Back to Home</span>
       </a>
     </div>
