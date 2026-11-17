@@ -24,32 +24,27 @@
   var audioCtx = null;
 
   /* ===== Tab Management ====================================== */
-  var tabs, panels;
-
   document.addEventListener('DOMContentLoaded', function () {
-    tabs = document.querySelectorAll('.tool-tab');
-    panels = document.querySelectorAll('.tool-tab-panel');
-
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (tab) { tab.setAttribute('aria-selected', 'false'); });
-        panels.forEach(function (p) { p.setAttribute('data-active', 'false'); });
-        tab.setAttribute('aria-selected', 'true');
-        var panel = document.getElementById(tab.getAttribute('aria-controls'));
-        if (panel) panel.setAttribute('data-active', 'true');
-      });
-    });
+    if (window.YMT && window.YMT.initTabs) {
+      window.YMT.initTabs(document.querySelector('.tool-tabs[role="tablist"]'));
+    }
 
     initStopwatch();
     initTimer();
     initPomodoro();
     initVisibility();
+    initLanguageSync();
   });
 
   /* ===== Audio (beep via AudioContext) ======================== */
   function ensureAudioCtx() {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
     if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx = new Ctx();
+    }
+    if (audioCtx.state === 'suspended' && typeof audioCtx.resume === 'function') {
+      audioCtx.resume().catch(function () { /* autoplay policy */ });
     }
     return audioCtx;
   }
@@ -57,6 +52,7 @@
   function playBeep(frequency, duration) {
     try {
       var ctx = ensureAudioCtx();
+      if (!ctx) return;
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
       osc.type = 'sine';
@@ -257,8 +253,25 @@
     tm.minutesInput = document.getElementById('tm-minutes');
     tm.secondsInput = document.getElementById('tm-seconds');
 
-    [tm.hoursInput, tm.minutesInput, tm.secondsInput].forEach(function (input) {
-      input.addEventListener('input', updateTimerDisplay);
+    var timerFields = [
+      { el: tm.hoursInput, max: 99 },
+      { el: tm.minutesInput, max: 59 },
+      { el: tm.secondsInput, max: 59 }
+    ];
+    timerFields.forEach(function (field) {
+      field.el.addEventListener('input', function () {
+        if (!tm.running) {
+          tm.remainingMs = 0;
+        }
+        validateTimerField(field.el, field.max);
+        updateTimerDisplay();
+      });
+      field.el.addEventListener('change', function () {
+        normalizeTimerField(field.el, field.max);
+      });
+      field.el.addEventListener('blur', function () {
+        normalizeTimerField(field.el, field.max);
+      });
     });
 
     tm.btnStart.addEventListener('click', function () {
@@ -274,10 +287,55 @@
     updateTimerDisplay();
   }
 
+  function setTimerInputsDisabled(disabled) {
+    tm.hoursInput.disabled = disabled;
+    tm.minutesInput.disabled = disabled;
+    tm.secondsInput.disabled = disabled;
+  }
+
+  function validateTimerField(input, max) {
+    if (input.validity && input.validity.badInput) {
+      if (window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(input, t('validation.invalidNumber'));
+      }
+      return false;
+    }
+    if (window.YMT && window.YMT.parseDiscreteNumber) {
+      var parsed = window.YMT.parseDiscreteNumber(input.value, 0, max);
+      if (!parsed.valid) {
+        if (window.YMT.showFieldError) {
+          window.YMT.showFieldError(input, t('validation.invalidNumber'));
+        }
+        return false;
+      }
+      if (window.YMT.clearFieldError) {
+        window.YMT.clearFieldError(input);
+      }
+    }
+    return true;
+  }
+
+  function parseTimerValue(input, max) {
+    if (window.YMT && window.YMT.parseDiscreteNumber) {
+      return window.YMT.parseDiscreteNumber(input.value, 0, max).value;
+    }
+    var n = parseInt(input.value, 10);
+    return Math.max(0, Math.min(max, isNaN(n) ? 0 : n));
+  }
+
+  function normalizeTimerField(input, max) {
+    if (!validateTimerField(input, max)) return;
+    if (window.YMT && window.YMT.normalizeDiscreteInput) {
+      if (window.YMT.normalizeDiscreteInput(input, 0, max)) {
+        updateTimerDisplay();
+      }
+    }
+  }
+
   function getTimerMs() {
-    var h = parseInt(tm.hoursInput.value, 10) || 0;
-    var m = parseInt(tm.minutesInput.value, 10) || 0;
-    var s = parseInt(tm.secondsInput.value, 10) || 0;
+    var h = parseTimerValue(tm.hoursInput, 99);
+    var m = parseTimerValue(tm.minutesInput, 59);
+    var s = parseTimerValue(tm.secondsInput, 59);
     return (h * 3600 + m * 60 + s) * 1000;
   }
 
@@ -288,6 +346,15 @@
 
   function startTimer() {
     if (!tm.running && tm.remainingMs <= 0) {
+      var okH = validateTimerField(tm.hoursInput, 99);
+      var okM = validateTimerField(tm.minutesInput, 59);
+      var okS = validateTimerField(tm.secondsInput, 59);
+      if (!okH || !okM || !okS) {
+        return;
+      }
+      normalizeTimerField(tm.hoursInput, 99);
+      normalizeTimerField(tm.minutesInput, 59);
+      normalizeTimerField(tm.secondsInput, 59);
       tm.remainingMs = getTimerMs();
     }
     if (tm.remainingMs <= 0) {
@@ -299,6 +366,7 @@
 
     tm.running = true;
     tm.targetTime = Date.now() + tm.remainingMs;
+    setTimerInputsDisabled(true);
     tm.btnStart.textContent = t('tool.stopwatchTimer.pause');
     tm.btnReset.disabled = false;
     tm.intervalId = setInterval(tickTimer, TICK_MS);
@@ -308,6 +376,7 @@
     tm.running = false;
     tm.remainingMs = Math.max(0, tm.targetTime - Date.now());
     clearInterval(tm.intervalId);
+    setTimerInputsDisabled(false);
     tm.btnStart.textContent = t('tool.stopwatchTimer.resume');
   }
 
@@ -318,6 +387,7 @@
       clearInterval(tm.intervalId);
       tm.running = false;
       tm.remainingMs = 0;
+      setTimerInputsDisabled(false);
       tm.btnStart.textContent = t('tool.stopwatchTimer.start');
       playAlarm();
       if (window.YMT && window.YMT.showNotification) {
@@ -331,6 +401,12 @@
     tm.running = false;
     tm.remainingMs = 0;
     clearInterval(tm.intervalId);
+    setTimerInputsDisabled(false);
+    if (window.YMT && window.YMT.clearFieldError) {
+      window.YMT.clearFieldError(tm.hoursInput);
+      window.YMT.clearFieldError(tm.minutesInput);
+      window.YMT.clearFieldError(tm.secondsInput);
+    }
     tm.btnStart.textContent = t('tool.stopwatchTimer.start');
     tm.btnReset.disabled = true;
     updateTimerDisplay();
@@ -449,6 +525,38 @@
         if (tm.running) tickTimer();
         if (pm.running) tickPomodoro();
       }
+    });
+  }
+
+  function initLanguageSync() {
+    document.addEventListener('languagechange', function () {
+      // Stopwatch button + laps
+      sw.btnStart.textContent = sw.running
+        ? t('tool.stopwatchTimer.pause')
+        : (sw.elapsed > 0 ? t('tool.stopwatchTimer.resume') : t('tool.stopwatchTimer.start'));
+      var lapEls = sw.lapsList.querySelectorAll('.lap-number');
+      for (var i = 0; i < lapEls.length; i++) {
+        lapEls[i].textContent = t('tool.stopwatchTimer.lapNumber', { n: lapEls.length - i });
+      }
+
+      // Timer button + active field errors
+      tm.btnStart.textContent = tm.running
+        ? t('tool.stopwatchTimer.pause')
+        : (tm.remainingMs > 0 ? t('tool.stopwatchTimer.resume') : t('tool.stopwatchTimer.start'));
+      [tm.hoursInput, tm.minutesInput, tm.secondsInput].forEach(function (input) {
+        if (input && input.getAttribute('data-invalid') === 'true' && window.YMT && window.YMT.showFieldError) {
+          window.YMT.showFieldError(input, t('validation.invalidNumber'));
+        }
+      });
+
+      // Pomodoro button + status + total time
+      var pmFullMs = pm.isWork ? POMODORO_WORK_MS : POMODORO_BREAK_MS;
+      pm.btnStart.textContent = pm.running
+        ? t('tool.stopwatchTimer.pause')
+        : (pm.remainingMs < pmFullMs ? t('tool.stopwatchTimer.resume') : t('tool.stopwatchTimer.start'));
+      pm.totalTimeEl.textContent = Math.round(pm.totalWorkMs / 60000) + ' ' + t('tool.stopwatchTimer.minutes').toLowerCase();
+      var statusLabel = pm.isWork ? t('tool.stopwatchTimer.pomodoroWork') : t('tool.stopwatchTimer.pomodoroBreak');
+      pm.status.textContent = statusLabel + ' \u2014 ' + formatTimer(pmFullMs);
     });
   }
 })();

@@ -25,7 +25,7 @@
   /* --- DOM refs ---------------------------------------------- */
   var lengthSlider;
   var cbUpper, cbLower, cbNumbers, cbSymbols, cbExclude;
-  var btnGenerate, outputEl, outputDisplay;
+  var btnGenerate, outputDisplay;
   var strengthSection, strengthBar, strengthLabel;
   var btnCopy, copySection;
   var testInput, testStrengthSection, testStrengthBar, testStrengthLabel;
@@ -41,7 +41,6 @@
     cbSymbols    = document.getElementById('pw-symbols');
     cbExclude    = document.getElementById('pw-exclude-ambiguous');
     btnGenerate  = document.getElementById('pw-generate');
-    outputEl     = document.getElementById('pw-output');
     outputDisplay = document.getElementById('pw-output-display');
     strengthSection = document.getElementById('pw-strength-section');
     strengthBar  = document.getElementById('pw-strength-bar');
@@ -54,25 +53,13 @@
     testStrengthLabel   = document.getElementById('pw-test-strength-label');
 
     // Events
+    var lengthValueEl = document.getElementById('pw-length-value');
+    if (lengthValueEl) lengthValueEl.textContent = lengthSlider.value;
     lengthSlider.addEventListener('input', function () {
-      var el = document.getElementById('pw-length-value');
-      if (el) el.textContent = lengthSlider.value;
+      if (lengthValueEl) lengthValueEl.textContent = lengthSlider.value;
     });
 
     btnGenerate.addEventListener('click', generatePassword);
-
-    outputEl.addEventListener('click', function () {
-      if (currentPassword) {
-        window.YMT.copyToClipboard(currentPassword);
-      }
-    });
-
-    outputEl.addEventListener('keydown', function (e) {
-      if ((e.key === 'Enter' || e.key === ' ') && currentPassword) {
-        e.preventDefault();
-        window.YMT.copyToClipboard(currentPassword);
-      }
-    });
 
     btnCopy.addEventListener('click', function () {
       if (currentPassword) {
@@ -102,6 +89,15 @@
           }
         }
       });
+    });
+
+    document.addEventListener('languagechange', function () {
+      if (currentPassword) {
+        updateStrengthMeter(currentPassword, strengthBar, strengthLabel);
+      }
+      if (testInput.value.length > 0 && !testStrengthSection.hidden) {
+        updateStrengthMeter(testInput.value, testStrengthBar, testStrengthLabel);
+      }
     });
   });
 
@@ -136,8 +132,8 @@
 
     // Display
     outputDisplay.textContent = password;
+    outputDisplay.removeAttribute('data-i18n');
     outputDisplay.classList.remove('tool-output-empty');
-    outputEl.setAttribute('aria-label', t('tool.passwordGenerator.outputGenerated'));
 
     // Strength
     strengthSection.hidden = false;

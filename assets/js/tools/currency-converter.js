@@ -39,7 +39,6 @@
     { code: 'CZK', flag: '\uD83C\uDDE8\uD83C\uDDFF' },
     { code: 'HUF', flag: '\uD83C\uDDED\uD83C\uDDFA' },
     { code: 'RON', flag: '\uD83C\uDDF7\uD83C\uDDF4' },
-    { code: 'BGN', flag: '\uD83C\uDDE7\uD83C\uDDEC' },
     { code: 'TRY', flag: '\uD83C\uDDF9\uD83C\uDDF7' },
     { code: 'ZAR', flag: '\uD83C\uDDFF\uD83C\uDDE6' },
     { code: 'MXN', flag: '\uD83C\uDDF2\uD83C\uDDFD' },
@@ -63,6 +62,7 @@
   var resultSection = document.getElementById('cc-result-section');
   var resultEl = document.getElementById('cc-result');
   var rateDetailEl = document.getElementById('cc-rate-detail');
+  var copyBtn = document.getElementById('cc-copy');
   var statusBanner = document.getElementById('cc-status-banner');
   var statusText = document.getElementById('cc-status-text');
   var manualGroup = document.getElementById('cc-manual-group');
@@ -72,7 +72,10 @@
   var rates = null;       // { base: 'EUR', date: '...', rates: { USD: 1.08, ... } }
   var ratesTimestamp = 0;  // ms epoch when rates were fetched/cached
   var isManualMode = false;
+  var statusType = null;   // null | 'stale' | 'noData' | 'cacheUsed'
   var debounceTimer = null;
+  var fetchSeq = 0;
+  var activeController = null;
 
   // --- Init ---------------------------------------------------
   populateSelects();
@@ -81,13 +84,15 @@
 
   loadRates();
 
-  // Re-populate selects on language change for translated currency names
+  // Re-populate selects and active output/banner on language change
   document.addEventListener('languagechange', function () {
     var fromVal = fromSelect.value;
     var toVal = toSelect.value;
     populateSelects();
     fromSelect.value = fromVal;
     toSelect.value = toVal;
+    renderStatus();
+    convert();
   });
 
   // --- Events -------------------------------------------------
@@ -97,12 +102,14 @@
   swapBtn.addEventListener('click', swapCurrencies);
   manualRateInput.addEventListener('input', debounceConvert);
 
-  resultEl.addEventListener('click', function () {
-    var text = resultEl.textContent;
-    if (text && text !== '\u2014') {
-      YMT.copyToClipboard(text);
-    }
-  });
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var text = resultEl.textContent;
+      if (text && text !== '\u2014') {
+        YMT.copyToClipboard(text);
+      }
+    });
+  }
 
   amountInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); convert(); }
@@ -129,78 +136,122 @@
 
   // --- Rate Loading -------------------------------------------
 
+  function isValidRateData(data) {
+    return Boolean(
+      data &&
+      typeof data === 'object' &&
+      typeof data.base === 'string' &&
+      data.rates &&
+      typeof data.rates === 'object' &&
+      !Array.isArray(data.rates)
+    );
+  }
+
   function loadRates() {
     // Try cache first
     var cached = loadFromCache();
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
       rates = cached.data;
       ratesTimestamp = cached.timestamp;
-      showStatus(null);
+      setStatus(null);
       convert();
       return;
     }
 
     // Fetch fresh rates
-    fetchRates()
-      .then(function (data) {
-        rates = data;
+    fetchRates(fromSelect.value)
+      .then(function (res) {
+        if (res.seq !== fetchSeq) return;
+        isManualMode = false;
+        manualGroup.setAttribute('hidden', '');
+        rates = res.data;
         ratesTimestamp = Date.now();
-        saveToCache(data);
-        showStatus(null);
+        saveToCache(res.data);
+        setStatus(null);
         convert();
       })
-      .catch(function () {
+      .catch(function (err) {
+        if (err && err.isSuperseded) return;
         // Fallback to stale cache
         if (cached) {
           rates = cached.data;
           ratesTimestamp = cached.timestamp;
-          var dateStr = formatTimestamp(ratesTimestamp);
-          showStatus(t('tool.currencyConverter.statusStaleCache', { date: dateStr }));
+          setStatus('stale');
           convert();
         } else {
           // No cache, no API — manual mode
           isManualMode = true;
           manualGroup.removeAttribute('hidden');
-          showStatus(t('tool.currencyConverter.statusNoData'));
+          setStatus('noData');
+          convert();
         }
       });
   }
 
-  function fetchRates() {
-    var base = fromSelect.value;
-    return fetch(API_BASE + '/latest?base=' + base)
+  function fetchRates(base) {
+    var seq = ++fetchSeq;
+    if (activeController) {
+      activeController.abort();
+      activeController = null;
+    }
+
+    var controller = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+    activeController = controller;
+    var timedOut = false;
+    var timeoutId = controller ? setTimeout(function () {
+      timedOut = true;
+      controller.abort();
+    }, 8000) : null;
+
+    var opts = controller ? { signal: controller.signal } : {};
+    return fetch(API_BASE + '/latest?base=' + encodeURIComponent(base), opts)
       .then(function (response) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (activeController === controller) activeController = null;
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json();
       })
       .then(function (data) {
-        if (!data || typeof data.rates !== 'object' || typeof data.base !== 'string') {
+        if (!isValidRateData(data)) {
           throw new Error('Invalid API response structure');
         }
-        return data;
+        return { seq: seq, data: data };
+      })
+      .catch(function (err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (activeController === controller) activeController = null;
+        if (err && err.name === 'AbortError' && !timedOut) {
+          err.isSuperseded = true;
+        }
+        throw err;
       });
   }
 
   function onCurrencyChange() {
-    if (isManualMode) {
-      debounceConvert();
-      return;
-    }
-
-    // Re-fetch rates when "from" currency changes
-    fetchRates()
-      .then(function (data) {
-        rates = data;
+    // Re-fetch rates when "from" currency changes (also recovers from manual mode)
+    fetchRates(fromSelect.value)
+      .then(function (res) {
+        if (res.seq !== fetchSeq) return;
+        isManualMode = false;
+        manualGroup.setAttribute('hidden', '');
+        rates = res.data;
         ratesTimestamp = Date.now();
-        saveToCache(data);
-        showStatus(null);
+        saveToCache(res.data);
+        setStatus(null);
         convert();
       })
-      .catch(function () {
-        // Use existing rates with cross-rate calculation
-        if (rates) {
-          var dateStr = formatTimestamp(ratesTimestamp);
-          showStatus(t('tool.currencyConverter.statusCacheUsed', { date: dateStr }));
+      .catch(function (err) {
+        if (err && err.isSuperseded) return;
+        // Use existing rates with cross-rate calculation if available
+        if (rates && getApiRate(fromSelect.value, toSelect.value) !== null) {
+          isManualMode = false;
+          manualGroup.setAttribute('hidden', '');
+          setStatus('cacheUsed');
+          convert();
+        } else {
+          isManualMode = true;
+          manualGroup.removeAttribute('hidden');
+          setStatus('noData');
           convert();
         }
       });
@@ -221,13 +272,33 @@
     try {
       var raw = localStorage.getItem(CACHE_KEY);
       if (!raw) return null;
-      return JSON.parse(raw);
+      var parsed = JSON.parse(raw);
+      if (
+        !parsed ||
+        typeof parsed !== 'object' ||
+        typeof parsed.timestamp !== 'number' ||
+        !Number.isFinite(parsed.timestamp) ||
+        !isValidRateData(parsed.data)
+      ) {
+        localStorage.removeItem(CACHE_KEY);
+        return null;
+      }
+      return parsed;
     } catch (e) {
+      try { localStorage.removeItem(CACHE_KEY); } catch (err) { /* ignore */ }
       return null;
     }
   }
 
   // --- Conversion ---------------------------------------------
+
+  function parseStrictNumber(raw) {
+    if (typeof raw !== 'string') return NaN;
+    var cleaned = raw.trim().replace(/\s+/g, '').replace(',', '.');
+    if (!cleaned || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(cleaned)) return NaN;
+    var num = Number(cleaned);
+    return Number.isFinite(num) ? num : NaN;
+  }
 
   function debounceConvert() {
     clearTimeout(debounceTimer);
@@ -235,12 +306,12 @@
   }
 
   function convert() {
-    var amountRaw = amountInput.value.replace(/\s/g, '').replace(/,/g, '.');
-    var amount = parseFloat(amountRaw);
+    var amount = parseStrictNumber(amountInput.value);
 
     if (isNaN(amount) || amount < 0) {
       resultEl.textContent = '\u2014';
       rateDetailEl.textContent = '';
+      if (copyBtn) copyBtn.hidden = true;
       resultSection.removeAttribute('hidden');
       return;
     }
@@ -252,15 +323,15 @@
       resultSection.removeAttribute('hidden');
       resultEl.textContent = formatResult(amount, to);
       rateDetailEl.textContent = '1 ' + from + ' = 1 ' + to;
+      if (copyBtn) copyBtn.hidden = false;
       return;
     }
 
     var rate = getRate(from, to);
     if (rate === null) {
-      if (!isManualMode) {
-        resultEl.textContent = t('tool.currencyConverter.rateUnavailable');
-        rateDetailEl.textContent = '';
-      }
+      resultEl.textContent = isManualMode ? '\u2014' : t('tool.currencyConverter.rateUnavailable');
+      rateDetailEl.textContent = '';
+      if (copyBtn) copyBtn.hidden = true;
       resultSection.removeAttribute('hidden');
       return;
     }
@@ -269,28 +340,21 @@
     resultSection.removeAttribute('hidden');
     resultEl.textContent = formatResult(result, to);
     rateDetailEl.textContent = '1 ' + from + ' = ' + rate.toFixed(6) + ' ' + to;
+    if (copyBtn) copyBtn.hidden = false;
   }
 
-  function getRate(from, to) {
-    // Manual mode
-    if (isManualMode) {
-      var manualRaw = manualRateInput.value.replace(/\s/g, '').replace(/,/g, '.');
-      var manualRate = parseFloat(manualRaw);
-      if (isNaN(manualRate) || manualRate <= 0) return null;
-      return manualRate;
-    }
-
+  function getApiRate(from, to) {
     if (!rates || !rates.rates) return null;
 
     var base = rates.base;
 
     // Direct: from is the base currency
-    if (base === from && rates.rates[to] !== undefined) {
+    if (base === from && typeof rates.rates[to] === 'number' && Number.isFinite(rates.rates[to])) {
       return rates.rates[to];
     }
 
     // Inverse: to is the base currency
-    if (base === to && rates.rates[from] !== undefined && rates.rates[from] !== 0) {
+    if (base === to && typeof rates.rates[from] === 'number' && rates.rates[from] > 0) {
       return 1 / rates.rates[from];
     }
 
@@ -299,10 +363,21 @@
     var baseToFrom = (from === base) ? 1 : rates.rates[from];
     var baseToTo = (to === base) ? 1 : rates.rates[to];
 
-    if (typeof baseToFrom !== 'number' || baseToFrom === 0 ||
-        typeof baseToTo !== 'number') return null;
+    if (typeof baseToFrom !== 'number' || baseToFrom <= 0 || !Number.isFinite(baseToFrom) ||
+        typeof baseToTo !== 'number' || !Number.isFinite(baseToTo)) return null;
 
     return baseToTo / baseToFrom;
+  }
+
+  function getRate(from, to) {
+    // Manual mode
+    if (isManualMode) {
+      var manualRate = parseStrictNumber(manualRateInput.value);
+      if (isNaN(manualRate) || manualRate <= 0) return null;
+      return manualRate;
+    }
+
+    return getApiRate(from, to);
   }
 
   // --- Swap ---------------------------------------------------
@@ -313,6 +388,27 @@
     fromSelect.value = toVal;
     toSelect.value = fromVal;
     onCurrencyChange();
+  }
+
+  // --- Status Banner ------------------------------------------
+
+  function setStatus(type) {
+    statusType = type;
+    renderStatus();
+  }
+
+  function renderStatus() {
+    if (!statusType) {
+      statusBanner.setAttribute('hidden', '');
+      return;
+    }
+    if (statusType === 'stale') {
+      showStatus(t('tool.currencyConverter.statusStaleCache', { date: formatTimestamp(ratesTimestamp) }));
+    } else if (statusType === 'cacheUsed') {
+      showStatus(t('tool.currencyConverter.statusCacheUsed', { date: formatTimestamp(ratesTimestamp) }));
+    } else if (statusType === 'noData') {
+      showStatus(t('tool.currencyConverter.statusNoData'));
+    }
   }
 
   // --- Status Banner ------------------------------------------

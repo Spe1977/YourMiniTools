@@ -108,7 +108,7 @@
 
   /* --- DOM refs ---------------------------------------------- */
   var categorySelect, fromSelect, toSelect, inputValue, outputEl;
-  var swapBtn;
+  var swapBtn, copySection, copyBtn;
 
   /* --- Init -------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
@@ -118,17 +118,15 @@
     inputValue     = document.getElementById('uc-input-value');
     outputEl       = document.getElementById('uc-output-value');
     swapBtn        = document.getElementById('uc-swap');
+    copySection    = document.getElementById('uc-copy-section');
+    copyBtn        = document.getElementById('uc-copy');
 
     categorySelect.addEventListener('change', onCategoryChange);
     fromSelect.addEventListener('change', convert);
     toSelect.addEventListener('change', convert);
     inputValue.addEventListener('input', convert);
     swapBtn.addEventListener('click', swapUnits);
-
-    outputEl.addEventListener('click', copyResult);
-    outputEl.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyResult(); }
-    });
+    if (copyBtn) copyBtn.addEventListener('click', copyResult);
 
     // Init — populate with whatever translations are available now
     onCategoryChange();
@@ -190,8 +188,13 @@
       return;
     }
 
-    var num = parseFloat(raw);
-    if (isNaN(num)) {
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(raw)) {
+      showEmpty(t('tool.unitConverter.invalidValue'));
+      return;
+    }
+
+    var num = Number(raw);
+    if (!Number.isFinite(num)) {
       showEmpty(t('tool.unitConverter.invalidValue'));
       return;
     }
@@ -213,7 +216,8 @@
 
     var formatted = formatResult(result);
     outputEl.textContent = formatted;
-    outputEl.className = 'tool-output tool-output-lg tool-output-copyable';
+    outputEl.className = 'tool-output tool-output-lg';
+    if (copySection) copySection.hidden = false;
   }
 
   function showEmpty(msg) {
@@ -223,6 +227,7 @@
     span.className = 'tool-output-empty';
     span.textContent = msg;
     outputEl.appendChild(span);
+    if (copySection) copySection.hidden = true;
   }
 
   function getUnit(catData, id) {
