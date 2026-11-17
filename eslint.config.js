@@ -1,5 +1,6 @@
 export default [
   {
+    files: ["assets/js/**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "script",
@@ -46,9 +47,31 @@ export default [
     }
   },
   {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        process: "readonly",
+        console: "readonly",
+        Buffer: "readonly",
+        URL: "readonly"
+      }
+    },
+    rules: {
+      "no-undef": "error",
+      "no-unused-vars": ["error", { "args": "none", "caughtErrors": "none", "varsIgnorePattern": "^_" }],
+      "no-redeclare": "error",
+      "no-unreachable": "error",
+      "no-constant-condition": "warn",
+      "no-duplicate-case": "error"
+    }
+  },
+  {
     ignores: [
       "assets/js/vendor/**",
       "tests/**",
+      "dist/**",
       "eslint.config.js"
     ]
   }
