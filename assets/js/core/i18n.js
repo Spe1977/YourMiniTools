@@ -17,6 +17,7 @@
   var translations = {};
   var fallbackTranslations = {};
   var isReady = false;
+  var requestSeq = 0;
 
   /* --- Locale Detection -------------------------------------- */
 
@@ -58,6 +59,7 @@
     // data-i18n → textContent
     var els = document.querySelectorAll('[data-i18n]');
     for (var i = 0; i < els.length; i++) {
+      if (!els[i].isConnected) continue;
       var key = els[i].getAttribute('data-i18n');
       var val = t(key);
       if (val !== key) {
@@ -96,6 +98,25 @@
     }
   }
 
+  function translateNodeSubtree(node) {
+    if (!node || node.nodeType !== 1) return;
+    var ownKey = node.getAttribute('data-i18n');
+    if (ownKey) {
+      var ownVal = t(ownKey);
+      if (ownVal !== ownKey) {
+        applyElementTranslation(node, ownVal);
+      }
+    }
+    var nested = node.querySelectorAll('[data-i18n]');
+    for (var n = 0; n < nested.length; n++) {
+      var nKey = nested[n].getAttribute('data-i18n');
+      var nVal = t(nKey);
+      if (nVal !== nKey) {
+        applyElementTranslation(nested[n], nVal);
+      }
+    }
+  }
+
   function applyElementTranslation(el, val) {
     var placeholders = el.querySelectorAll('[data-i18n-param]');
     if (!placeholders.length) {
@@ -119,7 +140,9 @@
       }
 
       if (params[match[1]]) {
-        fragment.appendChild(params[match[1]].cloneNode(true));
+        var paramClone = params[match[1]].cloneNode(true);
+        translateNodeSubtree(paramClone);
+        fragment.appendChild(paramClone);
       } else {
         fragment.appendChild(document.createTextNode(match[0]));
       }
@@ -195,6 +218,7 @@
   }
 
   function detectPageType() {
+    if (document.body && document.body.getAttribute('data-page-name') === '404') return '404';
     var path = window.location.pathname;
     if (path === '/' || path === '/index.html') return 'home';
     if (path.indexOf('/privacy') !== -1) return 'privacy';
@@ -202,7 +226,7 @@
     if (path.indexOf('/404') !== -1) return '404';
 
     // Tool pages — extract slug (supports both /tools/slug and /tools/slug.html)
-    var match = path.match(/\/tools\/([^.\/]+)(?:\.html)?$/);
+    var match = path.match(/\/tools\/([^./]+)(?:\.html)?\/?$/);
     if (match) return 'tool:' + match[1];
     return null;
   }
@@ -250,10 +274,15 @@
   }
 
   function t(key, params) {
-    var val = translations[key] || fallbackTranslations[key] || key;
+    var val = Object.prototype.hasOwnProperty.call(translations, key)
+      ? translations[key]
+      : (Object.prototype.hasOwnProperty.call(fallbackTranslations, key) ? fallbackTranslations[key] : key);
     if (params && typeof val === 'string') {
       Object.keys(params).forEach(function (p) {
-        val = val.replace(new RegExp('\\{' + escapeRegExp(p) + '\\}', 'g'), params[p]);
+        var replacement = String(params[p]);
+        val = val.replace(new RegExp('\\{' + escapeRegExp(p) + '\\}', 'g'), function () {
+          return replacement;
+        });
       });
     }
     return val;
@@ -261,14 +290,29 @@
 
   /* --- Language Switching ------------------------------------ */
 
-  function setLocale(locale) {
-    if (SUPPORTED_LOCALES.indexOf(locale) === -1) return Promise.resolve();
-    if (locale === currentLocale && isReady) return Promise.resolve();
-
+  function persistLocale(locale) {
     try {
       localStorage.setItem(STORAGE_KEY, locale);
     } catch (e) { /* quota */ }
+  }
 
+  function syncLocaleSelect(locale) {
+    var langSelect = document.getElementById('ymt-lang-select');
+    if (langSelect && langSelect.value !== locale) {
+      langSelect.value = locale;
+    }
+  }
+
+  function setLocale(locale) {
+    if (SUPPORTED_LOCALES.indexOf(locale) === -1) return Promise.resolve();
+    var mySeq = ++requestSeq;
+    if (locale === currentLocale && isReady) {
+      persistLocale(locale);
+      syncLocaleSelect(locale);
+      return Promise.resolve();
+    }
+
+    var prevLocale = currentLocale;
     var loadPromise;
     if (locale === DEFAULT_LOCALE) {
       // en.json is the fallback — already loaded or load it
@@ -280,6 +324,8 @@
     }
 
     return loadPromise.then(function (data) {
+      if (mySeq !== requestSeq) return;
+
       currentLocale = locale;
       if (locale === DEFAULT_LOCALE) {
         translations = data;
@@ -287,28 +333,31 @@
       } else {
         translations = data;
       }
+      persistLocale(locale);
       applyTranslations();
       updateHtmlMetadata();
       isReady = true;
-
-      // Update language selector if it exists
-      var langSelect = document.getElementById('ymt-lang-select');
-      if (langSelect && langSelect.value !== locale) {
-        langSelect.value = locale;
-      }
+      syncLocaleSelect(locale);
 
       // Emit custom event
       document.dispatchEvent(new CustomEvent('languagechange', {
         detail: { locale: locale }
       }));
     }).catch(function () {
-      // If non-default language fails, fall back to English
-      if (locale !== DEFAULT_LOCALE) {
+      if (mySeq !== requestSeq) return;
+
+      // Restore previous working locale/translations, or fall back to English
+      if (isReady && Object.keys(translations).length > 0) {
+        currentLocale = prevLocale;
+      } else {
         currentLocale = DEFAULT_LOCALE;
         translations = fallbackTranslations;
+        isReady = true;
         applyTranslations();
         updateHtmlMetadata();
       }
+      persistLocale(currentLocale);
+      syncLocaleSelect(currentLocale);
     });
   }
 
@@ -316,11 +365,13 @@
 
   function init() {
     var detectedLocale = detectLocale();
+    var initSeq = requestSeq;
 
     // Always load English as fallback first
     loadTranslations(DEFAULT_LOCALE)
       .then(function (enData) {
         fallbackTranslations = enData;
+        if (requestSeq !== initSeq) return;
 
         if (detectedLocale === DEFAULT_LOCALE) {
           translations = enData;
@@ -336,6 +387,7 @@
         }
       })
       .catch(function () {
+        if (requestSeq !== initSeq) return;
         // en.json failed to load — use English text already in HTML
         isReady = true;
       });
