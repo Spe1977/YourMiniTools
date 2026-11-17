@@ -49,8 +49,13 @@
       if (timezoneData) {
         var savedValues = selects.map(function (s) { return s.value; });
         populateSelects();
-        selects.forEach(function (s, i) { if (savedValues[i]) s.value = savedValues[i]; });
+        selects.forEach(function (s, i) {
+          if (savedValues[i] !== undefined) s.value = savedValues[i];
+        });
         rebuildCards();
+      } else if (clocksContainer && clocksContainer.querySelector('[data-load-error="true"]')) {
+        var errNode = clocksContainer.querySelector('[data-load-error="true"]');
+        if (errNode) errNode.textContent = t('tool.worldClock.errorLoadFailed');
       }
     });
   });
@@ -76,6 +81,14 @@
   }
 
   function showError(msg) {
+    if (clocksContainer) {
+      while (clocksContainer.firstChild) clocksContainer.removeChild(clocksContainer.firstChild);
+      var errP = document.createElement('p');
+      errP.className = 'form-hint';
+      errP.setAttribute('data-load-error', 'true');
+      errP.textContent = msg;
+      clocksContainer.appendChild(errP);
+    }
     if (window.YMT && window.YMT.showNotification) {
       window.YMT.showNotification(msg, 'error');
     }
@@ -157,7 +170,7 @@
     // Collect selected timezones
     var selected = [];
     selects.forEach(function (select) {
-      if (select.value) {
+      if (select.value && select.selectedIndex >= 0 && select.options[select.selectedIndex]) {
         selected.push({
           timezone: select.value,
           label: select.options[select.selectedIndex].textContent
@@ -178,9 +191,6 @@
     selected.forEach(function (item, idx) {
       var card = document.createElement('div');
       card.className = 'stat-item';
-      card.setAttribute('tabindex', '0');
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', t('tool.worldClock.copyTimeAria', { city: item.label }));
 
       var timeEl = document.createElement('div');
       timeEl.className = 'stat-value';
@@ -195,12 +205,19 @@
       var diffEl = document.createElement('div');
       diffEl.className = 'form-hint';
 
+      var copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'btn btn-secondary btn-sm wc-copy-btn';
+      copyBtn.textContent = t('common.copy');
+      copyBtn.setAttribute('aria-label', t('tool.worldClock.copyTimeAria', { city: item.label }));
+
       card.appendChild(timeEl);
       card.appendChild(labelEl);
       card.appendChild(dateEl);
       if (idx > 0) {
         card.appendChild(diffEl);
       }
+      card.appendChild(copyBtn);
 
       var cardEntry = {
         card: card,
@@ -214,14 +231,8 @@
         latestCopyText: ''
       };
 
-      card.addEventListener('click', function () {
+      copyBtn.addEventListener('click', function () {
         if (cardEntry.latestCopyText) {
-          window.YMT.copyToClipboard(cardEntry.latestCopyText);
-        }
-      });
-      card.addEventListener('keydown', function (e) {
-        if ((e.key === 'Enter' || e.key === ' ') && cardEntry.latestCopyText) {
-          e.preventDefault();
           window.YMT.copyToClipboard(cardEntry.latestCopyText);
         }
       });
@@ -269,11 +280,11 @@
 
       if (entry.index > 0) {
         var thisOffset = getUtcOffset(now, entry.timezone);
-        var diff = thisOffset - refOffset;
-        var diffHours = diff / 60;
-        if (diffHours === 0) {
+        var diff = Math.round(thisOffset - refOffset);
+        if (diff === 0) {
           entry.diffEl.textContent = t('tool.worldClock.sameTime');
         } else {
+          var diffHours = Math.round((diff / 60) * 100) / 100;
           var sign = diffHours > 0 ? '+' : '';
           entry.diffEl.textContent = sign + diffHours + 'h';
         }
@@ -282,12 +293,35 @@
   }
 
   /* --- UTC offset helper ------------------------------------- */
+  function getTimezoneEpochMs(date, timezone) {
+    var parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(date);
+    var map = {};
+    for (var i = 0; i < parts.length; i++) {
+      map[parts[i].type] = parts[i].value;
+    }
+    return Date.UTC(
+      parseInt(map.year, 10),
+      parseInt(map.month, 10) - 1,
+      parseInt(map.day, 10),
+      parseInt(map.hour, 10),
+      parseInt(map.minute, 10),
+      parseInt(map.second, 10)
+    );
+  }
+
   function getUtcOffset(date, timezone) {
-    // Get UTC offset in minutes for a given timezone
-    var utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
-    var tzStr = date.toLocaleString('en-US', { timeZone: timezone });
-    var utcDate = new Date(utcStr);
-    var tzDate = new Date(tzStr);
-    return (tzDate - utcDate) / 60000;
+    // Get UTC offset in minutes for a given timezone using formatToParts
+    var utcMs = getTimezoneEpochMs(date, 'UTC');
+    var tzMs = getTimezoneEpochMs(date, timezone);
+    return Math.round((tzMs - utcMs) / 60000);
   }
 })();

@@ -42,19 +42,10 @@
   // State
   var pendingFiles = []; // Array of { file, width, height, needsDownscale }
   var isConverting = false;
+  var conversionRunId = 0;
+  var queueEpoch = 0;
 
   // --- Event Listeners ------------------------------------------------
-
-  dropZone.addEventListener('click', function () {
-    if (!isConverting) fileInput.click();
-  });
-
-  dropZone.addEventListener('keydown', function (e) {
-    if ((e.key === 'Enter' || e.key === ' ') && !isConverting) {
-      e.preventDefault();
-      fileInput.click();
-    }
-  });
 
   dropZone.addEventListener('dragover', function (e) {
     e.preventDefault();
@@ -78,9 +69,10 @@
 
   formatSelect.addEventListener('change', updateQualityVisibility);
 
+  var qualityValueEl = document.getElementById('ic-quality-value');
+  if (qualityValueEl) qualityValueEl.textContent = qualitySlider.value;
   qualitySlider.addEventListener('input', function () {
-    var el = document.getElementById('ic-quality-value');
-    if (el) el.textContent = qualitySlider.value;
+    if (qualityValueEl) qualityValueEl.textContent = qualitySlider.value;
   });
 
   convertBtn.addEventListener('click', startConversion);
@@ -102,11 +94,13 @@
       if (files.length === 0) return;
     }
 
+    var epoch = queueEpoch;
     var validationPromises = files.map(function (file) {
       return validateFile(file);
     });
 
     Promise.all(validationPromises).then(function (results) {
+      if (epoch !== queueEpoch || isConverting) return;
       var added = 0;
       results.forEach(function (result) {
         if (result) {
@@ -147,6 +141,11 @@
 
       // Check dimensions
       return YMT.validateImageDimensions(file, MAX_MEGAPIXELS).then(function (dimResult) {
+        if (dimResult.error) {
+          YMT.showNotification(file.name + ': ' + dimResult.message, 'error');
+          return null;
+        }
+
         var entry = {
           file: file,
           width: dimResult.width,
@@ -249,7 +248,15 @@
   function startConversion() {
     if (isConverting || pendingFiles.length === 0) return;
     isConverting = true;
+    var runId = ++conversionRunId;
     convertBtn.disabled = true;
+    fileInput.disabled = true;
+    clearBtn.disabled = true;
+
+    var removeBtns = fileListEl.querySelectorAll('button');
+    for (var i = 0; i < removeBtns.length; i++) {
+      removeBtns[i].disabled = true;
+    }
 
     var format = formatSelect.value;
     var quality = format === 'image/png' ? undefined : qualitySlider.value / 100;
@@ -266,10 +273,13 @@
 
     var total = pendingFiles.length;
     var done = 0;
+    var succeeded = 0;
+    var failed = 0;
 
     function processNext() {
+      if (runId !== conversionRunId) return;
       if (done >= total) {
-        finishConversion();
+        finishConversion(succeeded, failed);
         return;
       }
 
@@ -278,14 +288,19 @@
 
       convertImage(entry, format, quality, ext)
         .then(function (result) {
+          if (runId !== conversionRunId) return;
           appendResult(result);
+          succeeded++;
           done++;
           updateProgress(done, total, done < total ? pendingFiles[done].file.name : '');
           processNext();
         })
         .catch(function () {
+          if (runId !== conversionRunId) return;
           appendError(entry.file.name);
+          failed++;
           done++;
+          updateProgress(done, total, done < total ? pendingFiles[done].file.name : '');
           processNext();
         });
     }
@@ -307,8 +322,8 @@
         // Downscale if needed
         if (entry.needsDownscale) {
           var scale = Math.min(MAX_DOWNSCALE_SIDE / w, MAX_DOWNSCALE_SIDE / h, 1);
-          w = Math.round(w * scale);
-          h = Math.round(h * scale);
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
         }
 
         var canvas = document.createElement('canvas');
@@ -419,16 +434,38 @@
     }
   }
 
-  function finishConversion() {
+  function finishConversion(succeeded, failed) {
     isConverting = false;
-    convertBtn.disabled = false;
-    YMT.showNotification(t('tool.imageConverter.conversionComplete'), 'success');
+    convertBtn.disabled = pendingFiles.length === 0;
+    fileInput.disabled = false;
+    clearBtn.disabled = false;
+
+    var removeBtns = fileListEl.querySelectorAll('button');
+    for (var i = 0; i < removeBtns.length; i++) {
+      removeBtns[i].disabled = false;
+    }
+
+    if (failed > 0 && succeeded === 0) {
+      YMT.showNotification(t('tool.imageConverter.conversionFailed'), 'error');
+    } else if (failed > 0) {
+      YMT.showNotification(
+        t('tool.imageConverter.conversionComplete') + ' (' + failed + ' ' + t('tool.imageConverter.conversionFailed') + ')',
+        'warning'
+      );
+    } else {
+      YMT.showNotification(t('tool.imageConverter.conversionComplete'), 'success');
+    }
   }
 
   function clearAll() {
+    if (isConverting) return;
+    queueEpoch++;
+    conversionRunId++;
     pendingFiles = [];
     isConverting = false;
     convertBtn.disabled = true;
+    fileInput.disabled = false;
+    clearBtn.disabled = false;
     clearBtn.setAttribute('hidden', '');
     fileListSection.setAttribute('hidden', '');
     resultsSection.setAttribute('hidden', '');

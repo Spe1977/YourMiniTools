@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
@@ -96,7 +98,7 @@
 
       <!-- Status Banner -->
       <div class="tool-banner tool-banner-info" id="cc-status-banner" hidden>
-        <svg class="tool-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <svg class="tool-banner-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         <span id="cc-status-text"></span>
       </div>
 
@@ -117,7 +119,7 @@
 
           <!-- Swap Button -->
           <button type="button" class="btn-swap" id="cc-swap" data-i18n-aria="tool.currencyConverter.swapAria" aria-label="Swap currencies">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
           </button>
 
           <div class="form-group cc-select-group">
@@ -128,8 +130,11 @@
 
         <!-- Result -->
         <div class="cc-result-section" id="cc-result-section" hidden>
-          <div class="tool-output tool-output-lg tool-output-copyable" id="cc-result" role="status" aria-live="polite">&mdash;</div>
+          <div class="tool-output tool-output-lg" id="cc-result" role="status" aria-live="polite">&mdash;</div>
           <p class="cc-rate-detail" id="cc-rate-detail"></p>
+          <div class="tool-actions tool-actions-center cc-result-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="cc-copy" data-i18n="common.copy" hidden>Copy</button>
+          </div>
         </div>
 
         <!-- Manual Rate Fallback -->
@@ -143,7 +148,7 @@
       <p class="tool-disclaimer" data-i18n="tool.currencyConverter.disclaimer">Rates are ECB reference rates, provided by the Frankfurter API (open source). These are not transactional rates. Updates are periodic, not real-time. For financial operations, consult your bank.</p>
 
       <a href="/" class="tool-back-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="common.backToHome">Back to Home</span>
       </a>
     </div>

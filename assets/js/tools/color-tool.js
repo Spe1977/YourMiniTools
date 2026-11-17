@@ -23,24 +23,27 @@
   var palette = [];
 
   /* ===== Tab Management ====================================== */
-  var tabsEls, panelsEls;
-
   document.addEventListener('DOMContentLoaded', function () {
-    tabsEls = document.querySelectorAll('.tool-tab');
-    panelsEls = document.querySelectorAll('.tool-tab-panel');
-
-    tabsEls.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabsEls.forEach(function (tb) { tb.setAttribute('aria-selected', 'false'); });
-        panelsEls.forEach(function (p) { p.setAttribute('data-active', 'false'); });
-        tab.setAttribute('aria-selected', 'true');
-        var panel = document.getElementById(tab.getAttribute('aria-controls'));
-        if (panel) panel.setAttribute('data-active', 'true');
-      });
-    });
+    if (window.YMT && window.YMT.initTabs) {
+      window.YMT.initTabs(document.querySelector('.tool-tabs[role="tablist"]'));
+    }
 
     initManual();
     initImagePicker();
+
+    document.addEventListener('languagechange', function () {
+      if (palette.length > 0) {
+        renderPalette();
+      }
+      if (hexInput && hexInput.getAttribute('data-invalid') === 'true' && window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(hexInput, t('tool.qrGenerator.invalidColor'));
+      }
+      [rInput, gInput, bInput, hInput, sInput, lInput].forEach(function (el) {
+        if (el && el.getAttribute('data-invalid') === 'true' && window.YMT && window.YMT.showFieldError) {
+          window.YMT.showFieldError(el, t('validation.invalidNumber'));
+        }
+      });
+    });
   });
 
   /* ===== Manual Color Picker ================================= */
@@ -61,64 +64,183 @@
     btnCopyRgb = document.getElementById('ct-copy-rgb');
     btnCopyHsl = document.getElementById('ct-copy-hsl');
 
+    function applyHex(normalized) {
+      updatingFrom = 'hex';
+      var rgb = hexToRgb(normalized);
+      setRgbInputs(rgb.r, rgb.g, rgb.b);
+      var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      setHslInputs(hsl.h, hsl.s, hsl.l);
+      updatePreview(normalized);
+      clearGroupErrors([hexInput, rInput, gInput, bInput, hInput, sInput, lInput]);
+      updatingFrom = null;
+    }
+
     hexInput.addEventListener('input', function () {
       if (updatingFrom) return;
-      var hex = hexInput.value.trim();
-      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        updatingFrom = 'hex';
-        var rgb = hexToRgb(hex);
-        setRgbInputs(rgb.r, rgb.g, rgb.b);
-        var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-        setHslInputs(hsl.h, hsl.s, hsl.l);
-        updatePreview(hex);
-        updatingFrom = null;
+      var raw = hexInput.value.trim();
+      var full = normalizeHex(raw, false);
+      if (full) {
+        applyHex(full);
+      } else if (window.YMT && window.YMT.clearFieldError && /^#?[0-9A-Fa-f]{0,6}$/.test(raw)) {
+        window.YMT.clearFieldError(hexInput);
+      } else if (window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(hexInput, t('tool.qrGenerator.invalidColor'));
       }
     });
 
-    [rInput, gInput, bInput].forEach(function (input) {
-      input.addEventListener('input', function () {
+    ['change', 'blur'].forEach(function (evtName) {
+      hexInput.addEventListener(evtName, function () {
         if (updatingFrom) return;
-        updatingFrom = 'rgb';
-        var r = clamp(parseInt(rInput.value, 10) || 0, 0, 255);
-        var g = clamp(parseInt(gInput.value, 10) || 0, 0, 255);
-        var b = clamp(parseInt(bInput.value, 10) || 0, 0, 255);
-        var hex = rgbToHex(r, g, b);
-        hexInput.value = hex;
-        var hsl = rgbToHsl(r, g, b);
-        setHslInputs(hsl.h, hsl.s, hsl.l);
-        updatePreview(hex);
-        updatingFrom = null;
+        var expanded = normalizeHex(hexInput.value, true);
+        if (expanded) {
+          hexInput.value = expanded;
+          applyHex(expanded);
+        } else if (window.YMT && window.YMT.showFieldError) {
+          window.YMT.showFieldError(hexInput, t('tool.qrGenerator.invalidColor'));
+        }
       });
     });
 
-    [hInput, sInput, lInput].forEach(function (input) {
-      input.addEventListener('input', function () {
-        if (updatingFrom) return;
-        updatingFrom = 'hsl';
-        var h = clamp(parseInt(hInput.value, 10) || 0, 0, 360);
-        var s = clamp(parseInt(sInput.value, 10) || 0, 0, 100);
-        var l = clamp(parseInt(lInput.value, 10) || 0, 0, 100);
-        var rgb = hslToRgb(h, s, l);
-        setRgbInputs(rgb.r, rgb.g, rgb.b);
-        var hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-        hexInput.value = hex;
-        updatePreview(hex);
-        updatingFrom = null;
-      });
-    });
+    var rgbFields = [
+      { el: rInput, max: 255 },
+      { el: gInput, max: 255 },
+      { el: bInput, max: 255 }
+    ];
+    var hslFields = [
+      { el: hInput, max: 360 },
+      { el: sInput, max: 100 },
+      { el: lInput, max: 100 }
+    ];
+
+    bindDiscreteGroup(rgbFields, syncFromRgb);
+    bindDiscreteGroup(hslFields, syncFromHsl);
+
+    function syncFromRgb() {
+      if (updatingFrom) return;
+      if (!validateDiscreteFields(rgbFields)) return;
+      updatingFrom = 'rgb';
+      var r = parseDiscrete(rInput, 255);
+      var g = parseDiscrete(gInput, 255);
+      var b = parseDiscrete(bInput, 255);
+      var hex = rgbToHex(r, g, b);
+      hexInput.value = hex;
+      var hsl = rgbToHsl(r, g, b);
+      setHslInputs(hsl.h, hsl.s, hsl.l);
+      updatePreview(hex);
+      clearGroupErrors([hexInput, hInput, sInput, lInput]);
+      updatingFrom = null;
+    }
+
+    function syncFromHsl() {
+      if (updatingFrom) return;
+      if (!validateDiscreteFields(hslFields)) return;
+      updatingFrom = 'hsl';
+      var h = parseDiscrete(hInput, 360);
+      var s = parseDiscrete(sInput, 100);
+      var l = parseDiscrete(lInput, 100);
+      var rgb = hslToRgb(h, s, l);
+      setRgbInputs(rgb.r, rgb.g, rgb.b);
+      var hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+      hexInput.value = hex;
+      updatePreview(hex);
+      clearGroupErrors([hexInput, rInput, gInput, bInput]);
+      updatingFrom = null;
+    }
 
     btnCopyHex.addEventListener('click', function () {
-      window.YMT.copyToClipboard(hexInput.value);
+      var validHex = normalizeHex(hexInput.value, true);
+      window.YMT.copyToClipboard(validHex || hexInput.value);
     });
     btnCopyRgb.addEventListener('click', function () {
-      window.YMT.copyToClipboard('rgb(' + rInput.value + ', ' + gInput.value + ', ' + bInput.value + ')');
+      if (!validateDiscreteFields(rgbFields)) return;
+      window.YMT.copyToClipboard(
+        'rgb(' + parseDiscrete(rInput, 255) + ', ' + parseDiscrete(gInput, 255) + ', ' + parseDiscrete(bInput, 255) + ')'
+      );
     });
     btnCopyHsl.addEventListener('click', function () {
-      window.YMT.copyToClipboard('hsl(' + hInput.value + ', ' + sInput.value + '%, ' + lInput.value + '%)');
+      if (!validateDiscreteFields(hslFields)) return;
+      window.YMT.copyToClipboard(
+        'hsl(' + parseDiscrete(hInput, 360) + ', ' + parseDiscrete(sInput, 100) + '%, ' + parseDiscrete(lInput, 100) + '%)'
+      );
     });
 
     // Initial preview
     updatePreview(hexInput.value);
+  }
+
+  function normalizeHex(raw, allowShorthand) {
+    var s = (raw || '').trim();
+    if (!s) return null;
+    if (s.charAt(0) !== '#') s = '#' + s;
+    if (allowShorthand && /^#[0-9A-Fa-f]{3}$/.test(s)) {
+      return ('#' + s.charAt(1) + s.charAt(1) + s.charAt(2) + s.charAt(2) + s.charAt(3) + s.charAt(3)).toUpperCase();
+    }
+    if (/^#[0-9A-Fa-f]{6}$/.test(s)) {
+      return s.toUpperCase();
+    }
+    return null;
+  }
+
+  function clearGroupErrors(inputs) {
+    if (!window.YMT || !window.YMT.clearFieldError) return;
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i]) window.YMT.clearFieldError(inputs[i]);
+    }
+  }
+
+  function validateSingleDiscrete(input, max) {
+    if (input.validity && input.validity.badInput) {
+      if (window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(input, t('validation.invalidNumber'));
+      }
+      return false;
+    }
+    if (window.YMT && window.YMT.parseDiscreteNumber) {
+      var parsed = window.YMT.parseDiscreteNumber(input.value, 0, max);
+      if (!parsed.valid) {
+        if (window.YMT.showFieldError) {
+          window.YMT.showFieldError(input, t('validation.invalidNumber'));
+        }
+        return false;
+      }
+      if (window.YMT.clearFieldError) {
+        window.YMT.clearFieldError(input);
+      }
+    }
+    return true;
+  }
+
+  function validateDiscreteFields(fields) {
+    var allValid = true;
+    for (var i = 0; i < fields.length; i++) {
+      if (!validateSingleDiscrete(fields[i].el, fields[i].max)) {
+        allValid = false;
+      }
+    }
+    return allValid;
+  }
+
+  function parseDiscrete(input, max) {
+    if (window.YMT && window.YMT.parseDiscreteNumber) {
+      return window.YMT.parseDiscreteNumber(input.value, 0, max).value;
+    }
+    return clamp(parseInt(input.value, 10) || 0, 0, max);
+  }
+
+  function bindDiscreteGroup(fields, syncFn) {
+    fields.forEach(function (field) {
+      field.el.addEventListener('input', syncFn);
+      ['change', 'blur'].forEach(function (evtName) {
+        field.el.addEventListener(evtName, function () {
+          if (!validateSingleDiscrete(field.el, field.max)) return;
+          if (window.YMT && window.YMT.normalizeDiscreteInput) {
+            if (window.YMT.normalizeDiscreteInput(field.el, 0, field.max)) {
+              syncFn();
+            }
+          }
+        });
+      });
+    });
   }
 
   function setRgbInputs(r, g, b) {
@@ -159,8 +281,7 @@
     pickCopyRgb  = document.getElementById('ct-pick-copy-rgb');
     pickCopyHsl  = document.getElementById('ct-pick-copy-hsl');
 
-    // File drop
-    fileDrop.addEventListener('click', function () { fileInput.click(); });
+    // File drop (label natively triggers fileInput on click; keep drag-and-drop)
     fileDrop.addEventListener('dragover', function (e) {
       e.preventDefault();
       fileDrop.setAttribute('data-dragover', 'true');
@@ -175,6 +296,7 @@
     });
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) loadImage(fileInput.files[0]);
+      fileInput.value = '';
     });
 
     // Canvas click/touch for pixel picking
@@ -249,6 +371,7 @@
 
   function pickPixel(e) {
     var rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height || !canvas.width || !canvas.height) return;
     var scaleX = canvas.width / rect.width;
     var scaleY = canvas.height / rect.height;
     var x = Math.floor((e.clientX - rect.left) * scaleX);
@@ -260,6 +383,7 @@
     if (e.touches.length === 0) return;
     var touch = e.touches[0];
     var rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height || !canvas.width || !canvas.height) return;
     var scaleX = canvas.width / rect.width;
     var scaleY = canvas.height / rect.height;
     var x = Math.floor((touch.clientX - rect.left) * scaleX);

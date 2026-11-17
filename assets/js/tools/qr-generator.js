@@ -81,6 +81,18 @@
 
     btnDownload.addEventListener('click', downloadQR);
 
+    document.addEventListener('languagechange', function () {
+      if (fgInput && fgInput.getAttribute('data-invalid') === 'true' && window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(fgInput, t('tool.qrGenerator.invalidColor'));
+      }
+      if (bgInput && bgInput.getAttribute('data-invalid') === 'true' && window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(bgInput, t('tool.qrGenerator.invalidColor'));
+      }
+      if (!outputEl.querySelector('canvas, img')) {
+        generateQR();
+      }
+    });
+
     showFieldsForType('url');
   });
 
@@ -127,17 +139,17 @@
         var lines = [
           'BEGIN:VCARD',
           'VERSION:3.0',
-          'N:' + lastName + ';' + firstName + ';;;',
-          'FN:' + name
+          'N:' + escapeVcard(lastName) + ';' + escapeVcard(firstName) + ';;;',
+          'FN:' + escapeVcard(name)
         ];
         if (inputs.vcardTel.value.trim()) {
-          lines.push('TEL:' + inputs.vcardTel.value.trim());
+          lines.push('TEL:' + escapeVcard(inputs.vcardTel.value.trim()));
         }
         if (inputs.vcardEmail.value.trim()) {
-          lines.push('EMAIL:' + inputs.vcardEmail.value.trim());
+          lines.push('EMAIL:' + escapeVcard(inputs.vcardEmail.value.trim()));
         }
         if (inputs.vcardOrg.value.trim()) {
-          lines.push('ORG:' + inputs.vcardOrg.value.trim());
+          lines.push('ORG:' + escapeVcard(inputs.vcardOrg.value.trim()));
         }
         lines.push('END:VCARD');
         return lines.join('\n');
@@ -149,7 +161,40 @@
 
   function escapeWifi(str) {
     // Escape special characters in WiFi QR string
-    return str.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/:/g, '\\:').replace(/"/g, '\\"');
+    return str
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/:/g, '\\:')
+      .replace(/"/g, '\\"');
+  }
+
+  function escapeVcard(str) {
+    return str
+      .replace(/\\/g, '\\\\')
+      .replace(/\r\n|\r|\n/g, '\\n')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,');
+  }
+
+  function normalizeHexColor(raw) {
+    var s = (raw || '').trim();
+    if (!s) return null;
+    if (s.charAt(0) !== '#') s = '#' + s;
+    if (/^#[0-9A-Fa-f]{3}$/.test(s)) {
+      return ('#' + s.charAt(1) + s.charAt(1) + s.charAt(2) + s.charAt(2) + s.charAt(3) + s.charAt(3)).toUpperCase();
+    }
+    if (/^#[0-9A-Fa-f]{6}$/.test(s)) {
+      return s.toUpperCase();
+    }
+    return null;
+  }
+
+  function clearOutput() {
+    while (outputEl.firstChild) {
+      outputEl.removeChild(outputEl.firstChild);
+    }
+    outputEl.removeAttribute('title');
   }
 
   /* --- Generate QR ------------------------------------------- */
@@ -160,11 +205,32 @@
 
   function generateQR() {
     var content = buildContent();
+    var fgRaw = fgInput.value.trim();
+    var bgRaw = bgInput.value.trim();
+    var fg = fgRaw ? normalizeHexColor(fgRaw) : '#000000';
+    var bg = bgRaw ? normalizeHexColor(bgRaw) : '#FFFFFF';
+    var hasColorError = false;
 
-    // Clear previous
-    while (outputEl.firstChild) {
-      outputEl.removeChild(outputEl.firstChild);
+    if (!fg) {
+      hasColorError = true;
+      if (window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(fgInput, t('tool.qrGenerator.invalidColor'));
+      }
+    } else if (window.YMT && window.YMT.clearFieldError) {
+      window.YMT.clearFieldError(fgInput);
     }
+
+    if (!bg) {
+      hasColorError = true;
+      if (window.YMT && window.YMT.showFieldError) {
+        window.YMT.showFieldError(bgInput, t('tool.qrGenerator.invalidColor'));
+      }
+    } else if (window.YMT && window.YMT.clearFieldError) {
+      window.YMT.clearFieldError(bgInput);
+    }
+
+    // Clear previous output & tooltip
+    clearOutput();
 
     if (!content) {
       downloadSection.hidden = true;
@@ -175,7 +241,17 @@
       return;
     }
 
+    if (hasColorError) {
+      downloadSection.hidden = true;
+      var colorErr = document.createElement('p');
+      colorErr.className = 'form-hint';
+      colorErr.textContent = t('tool.qrGenerator.invalidColor');
+      outputEl.appendChild(colorErr);
+      return;
+    }
+
     if (typeof QRCode === 'undefined') {
+      downloadSection.hidden = true;
       var errMsg = document.createElement('p');
       errMsg.className = 'form-hint';
       errMsg.textContent = t('tool.qrGenerator.libraryUnavailable');
@@ -185,8 +261,6 @@
 
     var size = parseInt(sizeSelect.value, 10);
     var errorLevel = errorSelect.value;
-    var fg = fgInput.value.trim() || '#000000';
-    var bg = bgInput.value.trim() || '#FFFFFF';
 
     var errorMap = { L: 1, M: 0, Q: 3, H: 2 };
 
@@ -199,8 +273,19 @@
         colorLight: bg,
         correctLevel: QRCode.CorrectLevel ? QRCode.CorrectLevel[errorLevel] : errorMap[errorLevel]
       });
+      outputEl.removeAttribute('title');
+      var imgs = outputEl.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; i++) {
+        imgs[i].alt = '';
+        imgs[i].setAttribute('aria-hidden', 'true');
+      }
+      var canvases = outputEl.querySelectorAll('canvas');
+      for (var j = 0; j < canvases.length; j++) {
+        canvases[j].setAttribute('aria-hidden', 'true');
+      }
       downloadSection.hidden = false;
     } catch (e) {
+      clearOutput();
       downloadSection.hidden = true;
       var errEl = document.createElement('p');
       errEl.className = 'form-hint';

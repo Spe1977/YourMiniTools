@@ -84,8 +84,7 @@
     // Input event
     textarea.addEventListener('input', updateVariants);
 
-    // File drop
-    fileDrop.addEventListener('click', function () { fileInput.click(); });
+    // File drop (label natively triggers fileInput on click; keep drag-and-drop)
     fileDrop.addEventListener('dragover', function (e) {
       e.preventDefault();
       fileDrop.setAttribute('data-dragover', 'true');
@@ -100,6 +99,7 @@
     });
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) loadFile(fileInput.files[0]);
+      fileInput.value = '';
     });
 
     // Clear
@@ -112,6 +112,8 @@
     // Downloads
     btnDownloadTxt.addEventListener('click', function () { downloadAll('txt'); });
     btnDownloadMd.addEventListener('click', function () { downloadAll('md'); });
+
+    document.addEventListener('languagechange', updateVariants);
   });
 
   /* --- File Load --------------------------------------------- */
@@ -123,7 +125,8 @@
     }
 
     var validExts = ['.txt', '.md'];
-    var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    var dotIdx = file.name.lastIndexOf('.');
+    var ext = dotIdx !== -1 ? file.name.slice(dotIdx).toLowerCase() : '';
     if (validExts.indexOf(ext) === -1 && file.type !== 'text/plain' && file.type !== 'text/markdown') {
       window.YMT.showNotification(t('tool.textCaseConverter.unsupportedFormat'), 'error');
       return;
@@ -218,7 +221,7 @@
   }
 
   function toSentenceCase(text) {
-    return text.toLowerCase().replace(/(^\s*|[.!?]\s+)(\w)/g, function (match, sep, char) {
+    return text.toLowerCase().replace(/(^\s*|[.!?]\s+)(\p{L})/gu, function (match, sep, char) {
       return sep + char.toUpperCase();
     });
   }
@@ -228,7 +231,7 @@
     var charIndex = 0;
     for (var i = 0; i < text.length; i++) {
       var c = text[i];
-      if (/[a-zA-Z\u00C0-\u024F]/.test(c)) {
+      if (/\p{L}/u.test(c)) {
         result += charIndex % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
         charIndex++;
       } else {
@@ -239,8 +242,8 @@
   }
 
   function toCapitalize(text) {
-    return text.toLowerCase().replace(/\b\w/g, function (c) {
-      return c.toUpperCase();
+    return text.toLowerCase().replace(/(^|[^\p{L}\p{N}'\u2019])(\p{L})/gu, function (match, sep, char) {
+      return sep + char.toUpperCase();
     });
   }
 

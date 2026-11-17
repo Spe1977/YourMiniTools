@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
@@ -54,6 +56,7 @@
   <script src="/assets/js/core/notifications.js?v=2.0.0" defer></script>
   <script src="/assets/js/core/clipboard.js?v=2.0.0" defer></script>
   <script src="/assets/js/core/download.js?v=2.0.0" defer></script>
+  <script src="/assets/js/core/validation.js?v=2.0.0" defer></script>
   <script src="/assets/js/core/i18n.js?v=2.0.0" defer></script>
   <script src="/assets/js/global.js?v=2.0.0" defer></script>
   <script src="/assets/js/tools/qr-generator.js?v=2.0.0" defer></script>
@@ -119,13 +122,13 @@
         <!-- Tel input -->
         <div class="form-group" id="qr-field-tel" hidden>
           <label class="form-label" for="qr-input-tel" data-i18n="tool.qrGenerator.telLabel">Phone number</label>
-          <input type="tel" id="qr-input-tel" class="form-input" inputmode="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.telPlaceholder" spellcheck="false">
+          <input type="tel" id="qr-input-tel" class="form-input" inputmode="tel" autocomplete="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.telPlaceholder" spellcheck="false">
         </div>
 
         <!-- Email input -->
         <div class="form-group" id="qr-field-email" hidden>
           <label class="form-label" for="qr-input-email" data-i18n="tool.qrGenerator.emailLabel">Email address</label>
-          <input type="email" id="qr-input-email" class="form-input" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.emailPlaceholder" spellcheck="false">
+          <input type="email" id="qr-input-email" class="form-input" autocomplete="email" autocapitalize="none" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.emailPlaceholder" spellcheck="false">
         </div>
 
         <!-- WiFi inputs -->
@@ -153,20 +156,20 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="qr-vcard-name" data-i18n="tool.qrGenerator.vcardNameLabel">Name</label>
-              <input type="text" id="qr-vcard-name" class="form-input" placeholder="John Doe" data-i18n-placeholder="tool.qrGenerator.vcardNamePlaceholder" spellcheck="false">
+              <input type="text" id="qr-vcard-name" class="form-input" autocomplete="name" placeholder="John Doe" data-i18n-placeholder="tool.qrGenerator.vcardNamePlaceholder" spellcheck="false">
             </div>
             <div class="form-group">
               <label class="form-label" for="qr-vcard-tel" data-i18n="tool.qrGenerator.vcardTelLabel">Phone</label>
-              <input type="tel" id="qr-vcard-tel" class="form-input" inputmode="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.vcardTelPlaceholder">
+              <input type="tel" id="qr-vcard-tel" class="form-input" inputmode="tel" autocomplete="tel" placeholder="+1 234 567 8900" data-i18n-placeholder="tool.qrGenerator.vcardTelPlaceholder">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="qr-vcard-email" data-i18n="tool.qrGenerator.vcardEmailLabel">Email</label>
-            <input type="email" id="qr-vcard-email" class="form-input" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.vcardEmailPlaceholder">
+            <input type="email" id="qr-vcard-email" class="form-input" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com" data-i18n-placeholder="tool.qrGenerator.vcardEmailPlaceholder">
           </div>
           <div class="form-group">
             <label class="form-label" for="qr-vcard-org" data-i18n="tool.qrGenerator.vcardOrgLabel">Organization</label>
-            <input type="text" id="qr-vcard-org" class="form-input" placeholder="Company name (optional)" data-i18n-placeholder="tool.qrGenerator.vcardOrgPlaceholder">
+            <input type="text" id="qr-vcard-org" class="form-input" autocomplete="organization" placeholder="Company name (optional)" data-i18n-placeholder="tool.qrGenerator.vcardOrgPlaceholder">
           </div>
         </div>
 
@@ -219,7 +222,7 @@
       <p class="tool-disclaimer" data-i18n="tool.qrGenerator.disclaimer">The QR Code is generated entirely in your browser. No data is sent to external servers.</p>
 
       <a href="/" class="tool-back-home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         <span data-i18n="common.backToHome">Back to Home</span>
       </a>
     </div>

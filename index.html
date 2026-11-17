@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var t=localStorage.getItem('ymt-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);document.querySelector('meta[name="color-scheme"]').content=t;}}catch(e){}</script>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7113697953909445" crossorigin="anonymous"></script>
@@ -85,6 +87,23 @@
       { "@type": "ListItem", "position": 10, "name": "Stopwatch & Timer", "url": "https://yourminitools.com/tools/stopwatch-timer" },
       { "@type": "ListItem", "position": 11, "name": "Color Tool", "url": "https://yourminitools.com/tools/color-tool" },
       { "@type": "ListItem", "position": 12, "name": "Currency Converter", "url": "https://yourminitools.com/tools/currency-converter" }
+    ]
+  }
+  </script>
+
+  <!-- Speculation Rules (prefetch tool pages on hover/focus) -->
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "where": {
+          "and": [
+            { "href_matches": "/tools/*" },
+            { "selector_matches": ".tool-card" }
+          ]
+        },
+        "eagerness": "moderate"
+      }
     ]
   }
   </script>

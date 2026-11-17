@@ -45,6 +45,7 @@
 
   // --- State --------------------------------------------------
   var lastResult = null; // { capital, rate, months, monthlyPayment, totalInterest, totalCost, schedule }
+  var jsPdfPromise = null;
 
   // --- Events -------------------------------------------------
   modeSelect.addEventListener('change', onModeChange);
@@ -53,6 +54,14 @@
   exportTxtBtn.addEventListener('click', function () { exportText('txt'); });
   exportMdBtn.addEventListener('click', function () { exportText('md'); });
   exportPdfBtn.addEventListener('click', exportPDF);
+
+  document.addEventListener('languagechange', function () {
+    if (lastResult) {
+      renderResults(true);
+    } else if (modeSelect.value === 'rate') {
+      stat1LabelEl.textContent = t('tool.loanCalculator.annualRate');
+    }
+  });
 
   // Allow Enter key to trigger calculation
   [capitalInput, rateInput, paymentInput, durationInput].forEach(function (el) {
@@ -71,9 +80,11 @@
     if (isRateMode) {
       rateGroup.setAttribute('hidden', '');
       paymentGroup.removeAttribute('hidden');
+      stat1LabelEl.textContent = t('tool.loanCalculator.annualRate');
     } else {
       rateGroup.removeAttribute('hidden');
       paymentGroup.setAttribute('hidden', '');
+      stat1LabelEl.textContent = t('tool.loanCalculator.monthlyPayment');
     }
     YMT.clearFieldError(rateInput);
     YMT.clearFieldError(paymentInput);
@@ -84,21 +95,26 @@
 
   // --- Calculation --------------------------------------------
 
-  function calculate() {
-    if (modeSelect.value === 'rate') {
-      calculateRate();
-    } else {
-      calculatePayment();
-    }
+  function parseDecimalInput(raw) {
+    if (typeof raw !== 'string') return NaN;
+    var cleaned = raw.trim().replace(/\s+/g, '').replace(',', '.');
+    if (!cleaned || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(cleaned)) return NaN;
+    var num = Number(cleaned);
+    return Number.isFinite(num) ? num : NaN;
   }
 
-  function calculatePayment() {
-    // Validate inputs
+  function parsePositiveInt(raw) {
+    if (typeof raw !== 'string') return NaN;
+    var cleaned = raw.trim().replace(/\s+/g, '');
+    if (!/^\d+$/.test(cleaned)) return NaN;
+    var num = Number(cleaned);
+    return Number.isSafeInteger(num) ? num : NaN;
+  }
+
+  function validateCapitalAndDuration() {
     var valid = true;
 
-    // Parse capital — allow dots/commas as thousand/decimal separators
-    var capitalRaw = capitalInput.value.replace(/\s/g, '').replace(/,/g, '.');
-    var capital = parseFloat(capitalRaw);
+    var capital = parseDecimalInput(capitalInput.value);
     if (isNaN(capital) || capital <= 0 || capital > 100000000) {
       YMT.showFieldError(capitalInput, t('tool.loanCalculator.errorCapital'));
       valid = false;
@@ -106,17 +122,7 @@
       YMT.clearFieldError(capitalInput);
     }
 
-    var rateRaw = rateInput.value.replace(/\s/g, '').replace(/,/g, '.');
-    var annualRate = parseFloat(rateRaw);
-    if (isNaN(annualRate) || annualRate < 0.01 || annualRate > 30) {
-      YMT.showFieldError(rateInput, t('tool.loanCalculator.errorRate'));
-      valid = false;
-    } else {
-      YMT.clearFieldError(rateInput);
-    }
-
-    var durationRaw = durationInput.value.replace(/\s/g, '');
-    var duration = parseInt(durationRaw, 10);
+    var duration = parsePositiveInt(durationInput.value);
     var isYears = durationTypeSelect.value === 'years';
     var maxDuration = isYears ? 50 : 600;
     var unitLabel = isYears ? t('tool.loanCalculator.unitYears').toLowerCase() : t('tool.loanCalculator.unitMonths').toLowerCase();
@@ -127,25 +133,14 @@
       YMT.clearFieldError(durationInput);
     }
 
-    if (!valid) return;
+    return {
+      valid: valid,
+      capital: capital,
+      months: isYears ? duration * 12 : duration
+    };
+  }
 
-    // Compute
-    var months = isYears ? duration * 12 : duration;
-    var monthlyRate = annualRate / 100 / 12;
-
-    var monthlyPayment;
-    if (monthlyRate === 0) {
-      monthlyPayment = capital / months;
-    } else {
-      // M = P × [r(1+r)^n] / [(1+r)^n – 1]
-      var factor = Math.pow(1 + monthlyRate, months);
-      monthlyPayment = capital * (monthlyRate * factor) / (factor - 1);
-    }
-
-    var totalCost = monthlyPayment * months;
-    var totalInterest = totalCost - capital;
-
-    // Build amortization schedule
+  function buildSchedule(capital, monthlyRate, monthlyPayment, months) {
     var schedule = [];
     var remaining = capital;
     for (var i = 1; i <= months; i++) {
@@ -162,6 +157,38 @@
         remaining: remaining
       });
     }
+    return schedule;
+  }
+
+  function calculate() {
+    if (modeSelect.value === 'rate') {
+      calculateRate();
+    } else {
+      calculatePayment();
+    }
+  }
+
+  function calculatePayment() {
+    var base = validateCapitalAndDuration();
+    var valid = base.valid;
+
+    var annualRate = parseDecimalInput(rateInput.value);
+    if (isNaN(annualRate) || annualRate < 0.01 || annualRate > 30) {
+      YMT.showFieldError(rateInput, t('tool.loanCalculator.errorRate'));
+      valid = false;
+    } else {
+      YMT.clearFieldError(rateInput);
+    }
+
+    if (!valid) return;
+
+    // Compute
+    var capital = base.capital;
+    var months = base.months;
+    var monthlyRate = annualRate / 100 / 12;
+    var monthlyPayment = amortPayment(capital, monthlyRate, months);
+    var totalCost = monthlyPayment * months;
+    var totalInterest = totalCost - capital;
 
     lastResult = {
       capital: capital,
@@ -170,7 +197,7 @@
       monthlyPayment: monthlyPayment,
       totalInterest: totalInterest,
       totalCost: totalCost,
-      schedule: schedule,
+      schedule: buildSchedule(capital, monthlyRate, monthlyPayment, months),
       mode: 'payment'
     };
 
@@ -178,19 +205,10 @@
   }
 
   function calculateRate() {
-    var valid = true;
+    var base = validateCapitalAndDuration();
+    var valid = base.valid;
 
-    var capitalRaw = capitalInput.value.replace(/\s/g, '').replace(/,/g, '.');
-    var capital = parseFloat(capitalRaw);
-    if (isNaN(capital) || capital <= 0 || capital > 100000000) {
-      YMT.showFieldError(capitalInput, t('tool.loanCalculator.errorCapital'));
-      valid = false;
-    } else {
-      YMT.clearFieldError(capitalInput);
-    }
-
-    var paymentRaw = paymentInput.value.replace(/\s/g, '').replace(/,/g, '.');
-    var monthlyPayment = parseFloat(paymentRaw);
+    var monthlyPayment = parseDecimalInput(paymentInput.value);
     if (isNaN(monthlyPayment) || monthlyPayment <= 0) {
       YMT.showFieldError(paymentInput, t('tool.loanCalculator.errorPayment'));
       valid = false;
@@ -198,21 +216,10 @@
       YMT.clearFieldError(paymentInput);
     }
 
-    var durationRaw = durationInput.value.replace(/\s/g, '');
-    var duration = parseInt(durationRaw, 10);
-    var isYears = durationTypeSelect.value === 'years';
-    var maxDuration = isYears ? 50 : 600;
-    var unitLabel = isYears ? t('tool.loanCalculator.unitYears').toLowerCase() : t('tool.loanCalculator.unitMonths').toLowerCase();
-    if (isNaN(duration) || duration < 1 || duration > maxDuration) {
-      YMT.showFieldError(durationInput, t('tool.loanCalculator.errorDuration', { max: maxDuration, unit: unitLabel }));
-      valid = false;
-    } else {
-      YMT.clearFieldError(durationInput);
-    }
-
     if (!valid) return;
 
-    var months = isYears ? duration * 12 : duration;
+    var capital = base.capital;
+    var months = base.months;
 
     // Business-logic checks (require both capital and payment to be valid)
     if (monthlyPayment <= capital / months) {
@@ -231,24 +238,6 @@
     var totalCost = monthlyPayment * months;
     var totalInterest = totalCost - capital;
 
-    // Build amortization schedule using the found rate
-    var schedule = [];
-    var remaining = capital;
-    for (var i = 1; i <= months; i++) {
-      var interestPart = remaining * monthlyRate;
-      var capitalPart = monthlyPayment - interestPart;
-      remaining = remaining - capitalPart;
-      if (remaining < 0.005) remaining = 0;
-
-      schedule.push({
-        month: i,
-        payment: monthlyPayment,
-        capitalPart: capitalPart,
-        interestPart: interestPart,
-        remaining: remaining
-      });
-    }
-
     lastResult = {
       capital: capital,
       annualRate: annualRate,
@@ -256,7 +245,7 @@
       monthlyPayment: monthlyPayment,
       totalInterest: totalInterest,
       totalCost: totalCost,
-      schedule: schedule,
+      schedule: buildSchedule(capital, monthlyRate, monthlyPayment, months),
       mode: 'rate'
     };
 
@@ -292,7 +281,7 @@
 
   // --- Rendering ----------------------------------------------
 
-  function renderResults() {
+  function renderResults(silent) {
     if (!lastResult) return;
 
     // Show sections
@@ -310,12 +299,12 @@
     totalInterestEl.textContent = formatCurrency(lastResult.totalInterest);
     totalCostEl.textContent = formatCurrency(lastResult.totalCost);
 
-    // Pie chart via conic-gradient
-    var capitalPct = (lastResult.capital / lastResult.totalCost) * 100;
+    // Pie chart via conic-gradient aligned with legend tokens
+    var capitalPct = lastResult.totalCost > 0 ? (lastResult.capital / lastResult.totalCost) * 100 : 100;
     var interestPct = 100 - capitalPct;
     pieChartEl.style.setProperty(
       'background-image',
-      'conic-gradient(#2980b9 0% ' + capitalPct.toFixed(1) + '%, #e74c3c ' + capitalPct.toFixed(1) + '% 100%)'
+      'conic-gradient(var(--accent) 0% ' + capitalPct.toFixed(1) + '%, var(--color-danger) ' + capitalPct.toFixed(1) + '% 100%)'
     );
     pieChartEl.setAttribute('aria-label',
       t('tool.loanCalculator.pieLabel', { capitalPct: capitalPct.toFixed(1), interestPct: interestPct.toFixed(1) })
@@ -347,7 +336,9 @@
       tableBody.appendChild(row);
     }
 
-    YMT.showNotification(t('tool.loanCalculator.calculationDone'), 'success');
+    if (!silent) {
+      YMT.showNotification(t('tool.loanCalculator.calculationDone'), 'success');
+    }
   }
 
   // --- Export TXT / MD ----------------------------------------
@@ -547,22 +538,28 @@
    */
   function loadJsPDF() {
     if (window.jspdf) return Promise.resolve(window.jspdf);
+    if (jsPdfPromise) return jsPdfPromise;
 
-    return new Promise(function (resolve, reject) {
+    jsPdfPromise = new Promise(function (resolve, reject) {
       var script = document.createElement('script');
       script.src = '/assets/js/vendor/pdf/jspdf.umd.min.js';
       script.onload = function () {
         if (window.jspdf) {
           resolve(window.jspdf);
         } else {
+          if (script.parentNode) script.parentNode.removeChild(script);
+          jsPdfPromise = null;
           reject(new Error('jsPDF not found after loading.'));
         }
       };
       script.onerror = function () {
+        if (script.parentNode) script.parentNode.removeChild(script);
+        jsPdfPromise = null;
         reject(new Error('Failed to load jsPDF.'));
       };
       document.head.appendChild(script);
     });
+    return jsPdfPromise;
   }
 
   // --- Reset --------------------------------------------------
@@ -593,6 +590,7 @@
     stat1LabelEl.textContent = t('tool.loanCalculator.monthlyPayment');
 
     pieChartEl.style.setProperty('background-image', 'none');
+    pieChartEl.setAttribute('aria-label', t('tool.loanCalculator.pieChartAria'));
 
     while (tableBody.firstChild) {
       tableBody.removeChild(tableBody.firstChild);

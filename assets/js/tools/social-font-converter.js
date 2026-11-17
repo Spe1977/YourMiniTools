@@ -98,7 +98,7 @@
   // Strikethrough: each character + combining long stroke overlay U+0336
   function toStrikethrough(text) {
     return mapChars(text, function (code, ch) {
-      if (code === 32 || code === 10 || code === 13) return ch;
+      if (code === 32 || code === 9 || code === 10 || code === 13) return ch;
       return ch + '\u0336';
     });
   }
@@ -106,7 +106,7 @@
   // Underline: each character + combining low line U+0332
   function toUnderline(text) {
     return mapChars(text, function (code, ch) {
-      if (code === 32 || code === 10 || code === 13) return ch;
+      if (code === 32 || code === 9 || code === 10 || code === 13) return ch;
       return ch + '\u0332';
     });
   }
@@ -147,6 +147,8 @@
 
     btnDownloadTxt.addEventListener('click', function () { downloadAll('txt'); });
     btnDownloadMd.addEventListener('click', function () { downloadAll('md'); });
+
+    document.addEventListener('languagechange', updateVariants);
   });
 
   /* --- Update Variants --------------------------------------- */

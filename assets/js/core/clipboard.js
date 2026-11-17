@@ -44,6 +44,7 @@
    */
   function fallbackCopy(text, successMsg) {
     return new Promise(function (resolve) {
+      var prevFocus = document.activeElement;
       var textarea = document.createElement('textarea');
       textarea.value = text;
       // Position off-screen without inline styles — use className
@@ -61,6 +62,9 @@
       }
 
       document.body.removeChild(textarea);
+      if (prevFocus && prevFocus.isConnected && typeof prevFocus.focus === 'function') {
+        prevFocus.focus({ preventScroll: true });
+      }
 
       if (window.YMT && window.YMT.showNotification) {
         if (ok) {

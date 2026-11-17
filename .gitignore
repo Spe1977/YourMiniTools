@@ -1,4 +1,5 @@
 # Development files
+dist/
 server.py
 sito.md
 API.md
@@ -8,6 +9,7 @@ CLAUDE.md
 .claude/
 .gemini/
 .playwright-mcp/
+graphify-out/
 /img/
 tests/axe.min.js
 __pycache__/

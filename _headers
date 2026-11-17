@@ -1,3 +1,13 @@
+# Security headers & CSP (Cloudflare Pages)
+# Nota sulla CSP:
+# - base-uri 'none', 'report-sample' e Reporting-Endpoints / report-to attivi.
+# - 'unsafe-inline' resta necessario in script-src e style-src finche' sono attivi Google AdSense
+#   e Funding Choices su hosting statico privo di Worker per nonce dinamici per-richiesta:
+#   secondo CSP Level 2/3, l'aggiunta di qualsiasi hash 'sha256-...' o 'strict-dynamic' in
+#   script-src disabilita 'unsafe-inline' e bloccherebbe gli script inline dinamici di AdSense.
+# - Hash SHA-256 deterministici verificati per gli script inline di prima parte:
+#   * anti-FOUC tema (16 pagine): 'sha256-k+EOialR44/Efq5ibwlirHBGDx6k2kT+9HpaF1SeMMM='
+#   * speculationrules (index.html): 'sha256-KM+aHNSIZeRMusQ4pM/uV4QCA+c0SI0hHn6cU/GSnTA='
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -5,7 +15,10 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googlesyndication.com https://*.g.doubleclick.net https://*.google.com https://*.gstatic.com https://*.googleadservices.com https://*.adtrafficquality.google; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.frankfurter.dev https://cloudflareinsights.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.g.doubleclick.net https://*.google.com https://*.adtrafficquality.google; frame-src https://*.googlesyndication.com https://*.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; media-src 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'; manifest-src 'self'
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Resource-Policy: same-origin
+  Reporting-Endpoints: default="https://yourminitools.com/csp-reports", csp-endpoint="https://yourminitools.com/csp-reports"
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-inline' 'report-sample' https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.googleadservices.com https://*.google.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' 'report-sample'; img-src 'self' data: blob: https://*.googlesyndication.com https://*.g.doubleclick.net https://*.google.com https://*.gstatic.com https://*.googleadservices.com https://*.adtrafficquality.google; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.frankfurter.dev https://cloudflareinsights.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.g.doubleclick.net https://*.google.com https://*.adtrafficquality.google; frame-src https://*.googlesyndication.com https://*.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; media-src 'self'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'; manifest-src 'self'; report-to csp-endpoint
 
 /*.html
   Cache-Control: no-cache, no-store, must-revalidate

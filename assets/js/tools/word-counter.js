@@ -58,8 +58,7 @@
       debounceTimer = setTimeout(updateStats, DEBOUNCE_MS);
     });
 
-    // File drop
-    fileDrop.addEventListener('click', function () { fileInput.click(); });
+    // File drop (label natively triggers fileInput on click; keep drag-and-drop)
     fileDrop.addEventListener('dragover', function (e) {
       e.preventDefault();
       fileDrop.setAttribute('data-dragover', 'true');
@@ -74,6 +73,7 @@
     });
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) loadFile(fileInput.files[0]);
+      fileInput.value = '';
     });
 
     // Actions
@@ -87,6 +87,7 @@
       if (textarea.value) window.YMT.downloadText(textarea.value, 'text.md', 'text/markdown;charset=utf-8');
     });
     btnClear.addEventListener('click', function () {
+      clearTimeout(debounceTimer);
       textarea.value = '';
       updateStats();
       textarea.focus();
@@ -102,6 +103,7 @@
 
   /* --- File Load --------------------------------------------- */
   function loadFile(file) {
+    clearTimeout(debounceTimer);
     var sizeCheck = window.YMT.validateFileSize(file, MAX_FILE_BYTES);
     if (!sizeCheck.valid) {
       window.YMT.showNotification(sizeCheck.message, 'error');
@@ -110,7 +112,8 @@
 
     var validTypes = ['text/plain', 'text/markdown'];
     var validExts = ['.txt', '.md'];
-    var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    var dotIdx = file.name.lastIndexOf('.');
+    var ext = dotIdx !== -1 ? file.name.slice(dotIdx).toLowerCase() : '';
     if (validTypes.indexOf(file.type) === -1 && validExts.indexOf(ext) === -1) {
       window.YMT.showNotification(t('tool.wordCounter.unsupportedFormat'), 'error');
       return;
@@ -174,9 +177,10 @@
       var secs = Math.round(minutes * 60);
       return secs <= 0 ? t('tool.wordCounter.time0min') : t('tool.wordCounter.timeLess1min');
     }
-    if (minutes < 60) return t('tool.wordCounter.timeMin', { n: Math.round(minutes) });
-    var h = Math.floor(minutes / 60);
-    var m = Math.round(minutes % 60);
+    var totalMin = Math.round(minutes);
+    if (totalMin < 60) return t('tool.wordCounter.timeMin', { n: totalMin });
+    var h = Math.floor(totalMin / 60);
+    var m = totalMin % 60;
     return t('tool.wordCounter.timeHourMin', { h: h, m: m });
   }
 })();

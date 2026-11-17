@@ -16,6 +16,10 @@ import sys
 import math
 import json
 import glob
+import base64
+import hashlib
+import tempfile
+import subprocess
 import unittest
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -72,6 +76,24 @@ class TestI18nIntegrity(unittest.TestCase):
                     self.assertIn(
                         m, en_keys,
                         f"Key '{m}' from '{attr}' in file '{os.path.basename(hf)}' not found in i18n dictionaries."
+                    )
+
+    def test_js_i18n_keys(self):
+        """All static literal t('...') keys referenced in non-vendor JS must exist in dictionaries."""
+        js_files = sorted(
+            glob.glob(os.path.join(PROJECT_ROOT, 'assets/js/*.js')) +
+            glob.glob(os.path.join(PROJECT_ROOT, 'assets/js/core/*.js')) +
+            glob.glob(os.path.join(PROJECT_ROOT, 'assets/js/tools/*.js'))
+        )
+        en_keys = set(self.data['en'].keys())
+        for jf in js_files:
+            with open(jf, 'r', encoding='utf-8') as f:
+                content = f.read()
+            for key in re.findall(r"\bt\(\s*['\"]([a-zA-Z0-9_.-]+)['\"]", content):
+                if '.' in key and not key.endswith('.'):
+                    self.assertIn(
+                        key, en_keys,
+                        f"Static JS key '{key}' in '{os.path.basename(jf)}' missing from en.json"
                     )
 
 
@@ -300,11 +322,255 @@ class TestAssetAndHeaderIntegrity(unittest.TestCase):
         self.assertIn("/assets/data/*", content)
         self.assertNotIn("/assets/icons/*", content)
 
+        # Point 8: CSP hardening & isolation headers
+        self.assertIn("Cross-Origin-Opener-Policy: same-origin-allow-popups", content)
+        self.assertIn("Cross-Origin-Resource-Policy: same-origin", content)
+        self.assertIn("Reporting-Endpoints:", content)
+        self.assertIn('default="https://yourminitools.com/csp-reports"', content)
+        self.assertIn('csp-endpoint="https://yourminitools.com/csp-reports"', content)
+        self.assertIn("base-uri 'none'", content)
+        self.assertNotIn("base-uri 'self'", content)
+        self.assertIn("'report-sample'", content)
+        self.assertIn("report-to csp-endpoint", content)
+
+        # Ensure AdSense, Funding Choices, Cloudflare Insights and Frankfurter API remain allowed
+        for origin in [
+            "https://pagead2.googlesyndication.com",
+            "https://fundingchoicesmessages.google.com",
+            "https://static.cloudflareinsights.com",
+            "https://cloudflareinsights.com",
+            "https://api.frankfurter.dev",
+        ]:
+            self.assertIn(origin, content)
+
+    def test_inline_scripts_and_speculation_rules(self):
+        """Verify deterministic inline scripts, SHA-256 hashes, and index.html speculationrules."""
+        html_files = sorted(
+            glob.glob(os.path.join(PROJECT_ROOT, '*.html')) +
+            glob.glob(os.path.join(PROJECT_ROOT, 'tools/*.html'))
+        )
+        self.assertEqual(len(html_files), 16)
+
+        with open(os.path.join(PROJECT_ROOT, '_headers'), 'r', encoding='utf-8') as f:
+            headers_content = f.read()
+
+        expected_fouc_hash = None
+        for hf in html_files:
+            with open(hf, 'r', encoding='utf-8') as f:
+                html = f.read()
+            self.assertIsNone(re.search(r'<base\b', html, re.I), f"Unexpected <base> in {hf}")
+            self.assertIsNone(re.search(r'<style\b', html, re.I), f"Unexpected <style> in {hf}")
+            self.assertIsNone(re.search(r'\sstyle=["\']', html, re.I), f"Unexpected style= in {hf}")
+            self.assertIsNone(re.search(r'\son[a-z]+=', html, re.I), f"Unexpected inline event in {hf}")
+
+            inline_scripts = [
+                (attrs, body)
+                for attrs, body in re.findall(r'<script\b([^>]*)>(.*?)</script>', html, re.S)
+                if 'src=' not in attrs and 'application/ld+json' not in attrs
+            ]
+            if os.path.basename(hf) == 'index.html':
+                self.assertEqual(len(inline_scripts), 2)
+                spec_bodies = [b for a, b in inline_scripts if 'speculationrules' in a]
+                self.assertEqual(len(spec_bodies), 1)
+                spec_data = json.loads(spec_bodies[0])
+                self.assertIn('prefetch', spec_data)
+                rule = spec_data['prefetch'][0]
+                self.assertEqual(rule.get('eagerness'), 'moderate')
+                self.assertEqual(
+                    rule.get('where'),
+                    {'and': [{'href_matches': '/tools/*'}, {'selector_matches': '.tool-card'}]},
+                )
+                spec_hash = 'sha256-' + base64.b64encode(
+                    hashlib.sha256(spec_bodies[0].encode('utf-8')).digest()
+                ).decode('ascii')
+                self.assertIn(spec_hash, headers_content)
+                fouc_bodies = [b for a, b in inline_scripts if 'speculationrules' not in a]
+            else:
+                self.assertEqual(len(inline_scripts), 1)
+                fouc_bodies = [inline_scripts[0][1]]
+
+            fouc_hash = 'sha256-' + base64.b64encode(
+                hashlib.sha256(fouc_bodies[0].encode('utf-8')).digest()
+            ).decode('ascii')
+            if expected_fouc_hash is None:
+                expected_fouc_hash = fouc_hash
+            self.assertEqual(fouc_hash, expected_fouc_hash)
+            self.assertIn(fouc_hash, headers_content)
+
+    def test_modern_css_and_production_minification(self):
+        """Verify @view-transition, scroll-state CSS, readable sources, and dist minification."""
+        global_css_path = os.path.join(PROJECT_ROOT, 'assets/css/global.css')
+        tools_css_path = os.path.join(PROJECT_ROOT, 'assets/css/tools.css')
+        with open(global_css_path, 'r', encoding='utf-8') as f:
+            global_css = f.read()
+        with open(tools_css_path, 'r', encoding='utf-8') as f:
+            tools_css = f.read()
+
+        # Readable source stylesheets preserved
+        self.assertGreater(global_css.count('\n'), 500)
+        self.assertGreater(tools_css.count('\n'), 500)
+        self.assertIn('@layer reset, tokens, base, components, utilities;', global_css)
+        self.assertIn('@view-transition', global_css)
+        self.assertIn('navigation: auto;', global_css)
+        self.assertIn('@supports (container-type: scroll-state)', global_css)
+        self.assertIn('@container scroll-state(scrollable: top)', global_css)
+
+        build_script = os.path.join(PROJECT_ROOT, 'scripts/build-prod.mjs')
+        self.assertTrue(os.path.exists(build_script))
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            res = subprocess.run(
+                ['node', build_script, '--out', tmpdir],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(res.returncode, 0, res.stderr)
+
+            min_global_path = os.path.join(tmpdir, 'assets/css/global.css')
+            min_tools_path = os.path.join(tmpdir, 'assets/css/tools.css')
+            self.assertTrue(os.path.exists(min_global_path))
+            self.assertTrue(os.path.exists(min_tools_path))
+            self.assertTrue(os.path.exists(os.path.join(tmpdir, 'index.html')))
+            self.assertTrue(os.path.exists(os.path.join(tmpdir, '_headers')))
+            self.assertTrue(os.path.exists(os.path.join(tmpdir, 'tools/password-generator.html')))
+
+            with open(min_global_path, 'r', encoding='utf-8') as f:
+                min_global = f.read()
+            with open(min_tools_path, 'r', encoding='utf-8') as f:
+                min_tools = f.read()
+
+            self.assertLess(len(min_global), len(global_css) * 0.80)
+            self.assertLess(len(min_tools), len(tools_css) * 0.80)
+            self.assertIn('@view-transition{navigation:auto}', min_global)
+            self.assertIn('@container scroll-state(scrollable:top)', min_global)
+            self.assertIn('calc(100% - 2 * var(--spacing-md))', min_global)
+            self.assertIn('data:image/svg+xml', min_tools)
+
     def test_vendor_libraries_exist(self):
         jspdf = os.path.join(PROJECT_ROOT, 'assets/js/vendor/pdf/jspdf.umd.min.js')
         qrcode = os.path.join(PROJECT_ROOT, 'assets/js/vendor/qr/qrcode.min.js')
         self.assertTrue(os.path.exists(jspdf), "jspdf.umd.min.js missing")
         self.assertTrue(os.path.exists(qrcode), "qrcode.min.js missing")
+
+    def test_html_dark_mode_and_semantics(self):
+        """Verify color-scheme meta, absence of data-theme='', label[for], and decorative SVG aria-hidden."""
+        html_files = sorted(
+            glob.glob(os.path.join(PROJECT_ROOT, '*.html')) +
+            glob.glob(os.path.join(PROJECT_ROOT, 'tools/*.html'))
+        )
+        self.assertEqual(len(html_files), 16)
+
+        for hf in html_files:
+            with open(hf, 'r', encoding='utf-8') as f:
+                html = f.read()
+            fname = os.path.relpath(hf, PROJECT_ROOT)
+            self.assertIn('<meta name="color-scheme" content="light dark">', html, f"Missing color-scheme meta in {fname}")
+            self.assertNotIn('data-theme=""', html, f"Empty data-theme attribute in {fname}")
+
+            for label_tag in re.findall(r'<label\b[^>]*class=["\'][^"\']*\bform-label\b[^"\']*["\'][^>]*>', html):
+                self.assertRegex(label_tag, r'\bfor=["\'][^"\']+["\']', f"Orphan form-label missing for= in {fname}: {label_tag}")
+
+            for svg_tag in re.findall(r'<svg\b[^>]*class=["\'][^"\']*\b(?:file-drop-icon|tool-banner-icon)\b[^"\']*["\'][^>]*>', html):
+                self.assertIn('aria-hidden="true"', svg_tag, f"Missing aria-hidden on icon SVG in {fname}: {svg_tag}")
+
+            for wrap_match in re.finditer(r'<(?:a|button)\b[^>]*class=["\'][^"\']*\b(?:tool-back-home|btn-swap)\b[^"\']*["\'][^>]*>([\s\S]*?)</(?:a|button)>', html):
+                inner_svgs = re.findall(r'<svg\b[^>]*>', wrap_match.group(1))
+                for svg_tag in inner_svgs:
+                    self.assertIn('aria-hidden="true"', svg_tag, f"Missing aria-hidden on button/link SVG in {fname}: {svg_tag}")
+
+    def test_css_architecture_and_motion(self):
+        """Verify @layer cascade, forced-colors, prefers-reduced-motion opt-in, and no anti-patterns."""
+        for rel_path in ['assets/css/global.css', 'assets/css/tools.css']:
+            with open(os.path.join(PROJECT_ROOT, rel_path), 'r', encoding='utf-8') as f:
+                css = f.read()
+            self.assertIn('@layer reset, tokens, base, components, utilities;', css, f"Missing @layer declaration in {rel_path}")
+            self.assertIn('@media (forced-colors: active)', css, f"Missing forced-colors rules in {rel_path}")
+            self.assertIn('@media (prefers-reduced-motion: no-preference)', css, f"Missing reduced-motion opt-in in {rel_path}")
+            self.assertNotIn('100vw', css, f"Unexpected 100vw unit in {rel_path}")
+
+        with open(os.path.join(PROJECT_ROOT, 'assets/css/global.css'), 'r', encoding='utf-8') as f:
+            global_css = f.read()
+        with open(os.path.join(PROJECT_ROOT, 'assets/css/tools.css'), 'r', encoding='utf-8') as f:
+            tools_css = f.read()
+
+        self.assertIsNone(re.search(r'\bbody\s*\{[^}]*font-size:\s*16px', global_css, re.S), "Hardcoded 16px body font-size in global.css")
+        self.assertIsNone(re.search(r'outline:\s*(none|0)\b', tools_css), "Unexpected outline: none in tools.css")
+
+    def test_manifest_and_sitemap_integrity(self):
+        """Verify manifest icons exist on disk and sitemap covers all indexable pages."""
+        with open(os.path.join(PROJECT_ROOT, 'manifest.json'), 'r', encoding='utf-8') as f:
+            manifest = json.load(f)
+        for icon in manifest.get('icons', []):
+            icon_rel = icon['src'].lstrip('/')
+            self.assertTrue(os.path.exists(os.path.join(PROJECT_ROOT, icon_rel)), f"Missing manifest icon: {icon['src']}")
+
+        with open(os.path.join(PROJECT_ROOT, 'sitemap.xml'), 'r', encoding='utf-8') as f:
+            sitemap = f.read()
+        expected_urls = [
+            'https://yourminitools.com/',
+            'https://yourminitools.com/about',
+            'https://yourminitools.com/privacy',
+        ] + [
+            'https://yourminitools.com/tools/' + os.path.basename(p).replace('.html', '')
+            for p in sorted(glob.glob(os.path.join(PROJECT_ROOT, 'tools/*.html')))
+        ]
+        for url in expected_urls:
+            self.assertIn(f'<loc>{url}</loc>', sitemap, f"Missing sitemap <loc> for {url}")
+
+    def test_wcag_semantic_and_accent_contrast_invariants(self):
+        """Verify semantic text tokens and all 12 per-tool accent buttons meet >= 4.5:1 WCAG AA contrast."""
+        def srgb(c):
+            c /= 255.0
+            return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+        def lum(hx):
+            hx = hx.lstrip('#')
+            return 0.2126 * srgb(int(hx[0:2], 16)) + 0.7152 * srgb(int(hx[2:4], 16)) + 0.0722 * srgb(int(hx[4:6], 16))
+
+        def contrast(c1, c2):
+            l1, l2 = lum(c1), lum(c2)
+            return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+
+        with open(os.path.join(PROJECT_ROOT, 'assets/css/global.css'), 'r', encoding='utf-8') as f:
+            global_css = f.read()
+
+        # All 12 per-tool --accent colors must provide >= 4.5:1 against #ffffff button text
+        accents = re.findall(r'\[data-tool-color="([^"]+)"\]\s*\{\s*--accent:\s*(#[0-9a-fA-F]{6})', global_css)
+        self.assertEqual(len(accents), 12)
+        for name, hex_val in accents:
+            ratio = contrast('#ffffff', hex_val)
+            self.assertGreaterEqual(ratio, 4.5, f"Tool '{name}' accent {hex_val} contrast vs #fff is {ratio:.2f} < 4.5")
+
+        # Light and dark semantic text tokens must meet >= 4.5:1 against --color-surface
+        for token in ['--color-success-text', '--color-warning-text', '--color-danger-text']:
+            matches = re.findall(rf'{re.escape(token)}:\s*(#[0-9a-fA-F]{{6}})', global_css)
+            self.assertGreaterEqual(len(matches), 2, f"Missing light/dark definitions for {token}")
+            self.assertGreaterEqual(contrast(matches[0], '#ffffff'), 4.5, f"Light {token} ({matches[0]}) < 4.5:1 on #ffffff")
+            self.assertGreaterEqual(contrast(matches[1], '#171a26'), 4.5, f"Dark {token} ({matches[1]}) < 4.5:1 on #171a26")
+
+    def test_tool_markup_and_currency_integrity(self):
+        """Verify structural accessibility attributes and active currency list."""
+        with open(os.path.join(PROJECT_ROOT, 'tools/loan-calculator.html'), 'r', encoding='utf-8') as f:
+            lc_html = f.read()
+        self.assertRegex(lc_html, r'class="tool-table-wrapper tool-table-scroll"[^>]*tabindex="0"')
+        self.assertIn('role="region"', lc_html)
+
+        with open(os.path.join(PROJECT_ROOT, 'tools/world-clock.html'), 'r', encoding='utf-8') as f:
+            wc_html = f.read()
+        self.assertRegex(wc_html, r'id="wc-clocks"[^>]*aria-live="off"')
+
+        with open(os.path.join(PROJECT_ROOT, 'tools/color-tool.html'), 'r', encoding='utf-8') as f:
+            ct_html = f.read()
+        self.assertNotIn('magnifying lens', ct_html.lower())
+
+        with open(os.path.join(PROJECT_ROOT, 'tools/qr-generator.html'), 'r', encoding='utf-8') as f:
+            qr_html = f.read()
+        self.assertIn('assets/js/core/validation.js', qr_html)
+
+        with open(os.path.join(PROJECT_ROOT, 'assets/js/tools/currency-converter.js'), 'r', encoding='utf-8') as f:
+            cc_js = f.read()
+        self.assertNotIn("code: 'BGN'", cc_js)
 
 
 if __name__ == '__main__':

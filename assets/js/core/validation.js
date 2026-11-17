@@ -75,7 +75,7 @@
    * Requires loading the image first — returns a Promise.
    * @param {File} file
    * @param {number} maxMegapixels
-   * @returns {Promise<{valid: boolean, width: number, height: number, message: string}>}
+   * @returns {Promise<{valid: boolean, error: boolean, width: number, height: number, message: string}>}
    */
   function validateImageDimensions(file, maxMegapixels) {
     return new Promise(function (resolve) {
@@ -87,17 +87,18 @@
         if (mp > maxMegapixels) {
           resolve({
             valid: false,
+            error: false,
             width: img.width,
             height: img.height,
             message: t('validation.imageTooLarge', { width: img.width, height: img.height, mp: mp.toFixed(1), max: maxMegapixels })
           });
         } else {
-          resolve({ valid: true, width: img.width, height: img.height, message: '' });
+          resolve({ valid: true, error: false, width: img.width, height: img.height, message: '' });
         }
       };
       img.onerror = function () {
         URL.revokeObjectURL(url);
-        resolve({ valid: false, width: 0, height: 0, message: t('validation.imageReadError') });
+        resolve({ valid: false, error: true, width: 0, height: 0, message: t('validation.imageReadError') });
       };
       img.src = url;
     });
@@ -110,6 +111,89 @@
    * @param {HTMLElement} input
    * @param {string} message
    */
+  function getDescribedByTokens(el) {
+    var attr = el.getAttribute('aria-describedby');
+    if (!attr) return [];
+    return attr.trim().split(/\s+/).filter(Boolean);
+  }
+
+  function addDescribedById(el, id) {
+    if (!id) return;
+    var tokens = getDescribedByTokens(el);
+    if (tokens.indexOf(id) === -1) {
+      tokens.push(id);
+      el.setAttribute('aria-describedby', tokens.join(' '));
+    }
+  }
+
+  function removeDescribedById(el, id) {
+    if (!id) return;
+    var tokens = getDescribedByTokens(el).filter(function (token) {
+      return token !== id;
+    });
+    if (tokens.length > 0) {
+      el.setAttribute('aria-describedby', tokens.join(' '));
+    } else {
+      el.removeAttribute('aria-describedby');
+    }
+  }
+
+  /**
+   * Parse a discrete integer from text input (accepting comma/dot decimals and
+   * whitespace) and clamp it to [min, max]. Empty/incomplete text defaults to min.
+   *
+   * @param {string|number} rawValue
+   * @param {number} min
+   * @param {number} max
+   * @returns {{ valid: boolean, isEmpty: boolean, value: number }}
+   */
+  function parseDiscreteNumber(rawValue, min, max) {
+    var str = String(rawValue === null || rawValue === undefined ? '' : rawValue).trim();
+    if (!str) {
+      return { valid: true, isEmpty: true, value: min };
+    }
+    var normalized = str.replace(/,/g, '.');
+    if (normalized === '-' || normalized === '+' || normalized === '.') {
+      return { valid: true, isEmpty: true, value: min };
+    }
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)) {
+      return { valid: false, isEmpty: false, value: min };
+    }
+    var num = Math.round(Number(normalized));
+    if (!isFinite(num)) {
+      return { valid: false, isEmpty: false, value: min };
+    }
+    var clamped = Math.max(min, Math.min(max, num));
+    return { valid: true, isEmpty: false, value: clamped };
+  }
+
+  /**
+   * Normalize a discrete numeric input element on blur/change when its value is
+   * empty or parseable as a number. Leaves unparseable text intact so native
+   * constraint validation (:user-invalid) can signal the invalid value.
+   *
+   * @param {HTMLInputElement} input
+   * @param {number} min
+   * @param {number} max
+   * @returns {boolean} true if input.value was updated
+   */
+  function normalizeDiscreteInput(input, min, max) {
+    if (!input) return false;
+    var parsed = parseDiscreteNumber(input.value, min, max);
+    if (!parsed.valid) return false;
+    var next = String(parsed.value);
+    if (input.value !== next) {
+      input.value = next;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Display an inline error under a form field.
+   * @param {HTMLElement} input
+   * @param {string} message
+   */
   function showFieldError(input, message) {
     input.setAttribute('data-invalid', 'true');
     input.setAttribute('aria-invalid', 'true');
@@ -118,10 +202,10 @@
     errorEl.textContent = message;
     errorEl.setAttribute('data-visible', 'true');
 
-    // Link error to input for screen readers
+    // Link error to input for screen readers without clobbering preexisting hints
     var errorId = errorEl.id || ('err-' + (input.id || Math.random().toString(36).slice(2, 8)));
     errorEl.id = errorId;
-    input.setAttribute('aria-describedby', errorId);
+    addDescribedById(input, errorId);
   }
 
   /**
@@ -136,6 +220,7 @@
     if (errorEl) {
       errorEl.textContent = '';
       errorEl.setAttribute('data-visible', 'false');
+      removeDescribedById(input, errorEl.id);
     }
   }
 
@@ -157,13 +242,15 @@
   function getErrorElement(input, create) {
     create = create !== false;
     var group = input.closest('.form-group');
-    var errorEl = group ? group.querySelector('.form-error') : null;
+    var nextSibling = input.nextElementSibling;
+    var errorEl = group
+      ? group.querySelector('.form-error')
+      : (nextSibling && nextSibling.classList.contains('form-error') ? nextSibling : null);
 
     if (!errorEl && create) {
       errorEl = document.createElement('span');
       errorEl.className = 'form-error';
-      errorEl.setAttribute('role', 'alert');
-      errorEl.setAttribute('aria-live', 'assertive');
+      errorEl.setAttribute('aria-live', 'polite');
       errorEl.setAttribute('aria-atomic', 'true');
       errorEl.setAttribute('data-visible', 'false');
       if (group) {
@@ -182,6 +269,8 @@
   window.YMT.requireNumberInRange = requireNumberInRange;
   window.YMT.validateFileSize = validateFileSize;
   window.YMT.validateImageDimensions = validateImageDimensions;
+  window.YMT.parseDiscreteNumber = parseDiscreteNumber;
+  window.YMT.normalizeDiscreteInput = normalizeDiscreteInput;
   window.YMT.showFieldError = showFieldError;
   window.YMT.clearFieldError = clearFieldError;
   window.YMT.clearAllErrors = clearAllErrors;
